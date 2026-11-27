@@ -2,7 +2,7 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#e60012">
-<title>Juegos Diarios</title>
+<title>One More Game</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1/dist/umd/supabase.js"></script>
 <style>
 :root{--bg:#f2f2f7;--card:#fff;--tx:#111114;--mu:#6e6e78;--ac:#e60012;--bd:rgba(0,0,0,.08);--bar:rgba(255,255,255,.85)}
@@ -73,9 +73,21 @@ nav em{position:absolute;top:-2px;right:calc(50% - 24px);background:var(--ac);co
 .bk span{position:absolute;left:0;right:0;bottom:0;padding:20px 6px 6px;background:linear-gradient(transparent,rgba(0,0,0,.8));color:#fff;font-size:11px;font-weight:600;line-height:1.2}
 .err{color:var(--ac);font-size:14px;margin:0 0 10px;min-height:1em}
 .mini2{padding:7px 12px;border-radius:10px;background:var(--ac);color:#fff;font-size:13px;font-weight:700}.mini2.gr{background:var(--bg);color:var(--mu)}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}.cp{padding:7px 13px;border-radius:20px;background:var(--card);font-size:13px;font-weight:600;white-space:nowrap;color:var(--mu)}.cp.on{background:var(--ac);color:#fff}
+.lh{position:relative;overflow:hidden;border-radius:26px;padding:26px 16px 16px;margin-bottom:18px;background:linear-gradient(135deg,#312e81,#7c3aed 55%,#ec4899)}
+.lg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:center}.lg svg{width:100%;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+.lt{text-align:center;color:#fff;font-weight:800;letter-spacing:.25em;font-size:13px;margin-top:12px;opacity:.9}
+.st{position:absolute;color:#fde68a;font-size:18px}.s1{top:10px;left:16px}.s2{top:34px;right:22px}.s3{bottom:34px;left:48%}
+#mt{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:linear-gradient(160deg,#7c3aed,#ec4899);color:#fff;text-align:center;padding:24px}#mt.on{display:flex}
+.mh{font-size:42px;font-weight:900;font-style:italic;letter-spacing:-.02em;margin-bottom:18px}
+.mav span{width:92px;height:92px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:48px;margin:0 -10px;border:4px solid #fff}
+.mg{width:190px;height:250px;margin:16px auto 8px;border-radius:20px;background:#444 center/cover;display:flex;align-items:flex-end;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden}
+.mg span{width:100%;padding:30px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-weight:800;font-size:17px}
+.cons{display:flex;gap:8px;overflow-x:auto;margin:8px 0 12px}.cc{display:flex;flex-direction:column;align-items:center;color:#fff;border-radius:14px;padding:8px 10px;font-size:11px;font-weight:700;min-width:70px}.cc svg{width:52px}
+#sh .row{background:var(--bg)}
 </style></head><body>
 <div id="v"></div><nav><div id="nav"></div></nav>
-<div id="dv"></div><div id="sh"><div class="s" id="shb"></div></div><div id="tt"></div>
+<div id="dv"></div><div id="mt"></div><div id="sh"><div class="s" id="shb"></div></div><div id="tt"></div>
 <script>
 const $=i=>document.getElementById(i);
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
@@ -179,8 +191,13 @@ const C=[
 {k:"vita",n:"PS Vita",id:19,a:["ps vita","playstation vita"],c:["#06b6d4","#164e63"],s:"<rect x='4' y='14' width='92' height='42' rx='16' fill='#0f172a'/><rect x='22' y='19' width='56' height='32' rx='5' fill='#38bdf8'/><circle cx='13' cy='35' r='6' fill='#475569'/><circle cx='87' cy='35' r='6' fill='#475569'/>"},
 {k:"ds",n:"DS",id:9,a:["nintendo ds"],c:["#ec4899","#9d174d"],s:"<rect x='26' y='3' width='48' height='30' rx='4' fill='#e5e7eb'/><rect x='31' y='7' width='38' height='22' rx='1' fill='#0f172a'/><rect x='26' y='37' width='48' height='30' rx='4' fill='#e5e7eb'/><rect x='31' y='41' width='38' height='22' rx='1' fill='#1e3a8a'/>"},
 {k:"ps4",n:"PS4",id:18,a:["playstation 4"],c:["#2563eb","#1e1b4b"],s:"<polygon points='12,56 28,16 92,16 76,56' fill='#111827'/><polygon points='22,56 34,22 41,22 29,56' fill='#3b82f6'/>"},
-{k:"gba",n:"GBA",id:24,a:["game boy advance"],c:["#8b5cf6","#4c1d95"],s:"<rect x='4' y='16' width='92' height='40' rx='14' fill='#7c3aed'/><rect x='30' y='21' width='40' height='30' rx='3' fill='#1e1b4b'/><rect x='10' y='33' width='15' height='4' rx='1' fill='#ddd6fe'/><rect x='15.5' y='27.5' width='4' height='15' rx='1' fill='#ddd6fe'/><circle cx='80' cy='30' r='4' fill='#ddd6fe'/><circle cx='89' cy='38' r='4' fill='#ddd6fe'/>"}];
-const AV=["😎","🦊","🐱","🐼","🤖","👾","🦄","🐙"];
+{k:"gba",n:"GBA",id:24,a:["game boy advance"],c:["#8b5cf6","#4c1d95"],s:"<rect x='4' y='16' width='92' height='40' rx='14' fill='#7c3aed'/><rect x='30' y='21' width='40' height='30' rx='3' fill='#1e1b4b'/><rect x='10' y='33' width='15' height='4' rx='1' fill='#ddd6fe'/><rect x='15.5' y='27.5' width='4' height='15' rx='1' fill='#ddd6fe'/><circle cx='80' cy='30' r='4' fill='#ddd6fe'/><circle cx='89' cy='38' r='4' fill='#ddd6fe'/>"},
+{k:"ps5",n:"PS5",id:187,a:["playstation 5"],c:["#2563eb","#0f172a"],s:"<rect x='34' y='6' width='32' height='58' rx='14' fill='#f8fafc'/><rect x='44' y='10' width='12' height='50' rx='6' fill='#0f172a'/>"},
+{k:"xsx",n:"Xbox Series",id:186,a:["xbox series s/x","xbox series x","xbox series x/s"],c:["#16a34a","#052e16"],s:"<rect x='32' y='6' width='36' height='58' rx='4' fill='#111827'/><circle cx='50' cy='20' r='9' fill='#22c55e'/><rect x='38' y='40' width='24' height='3' rx='1.5' fill='#374151'/>"},
+{k:"xone",n:"Xbox One",id:1,a:["xbox one"],c:["#22c55e","#14532d"],s:"<rect x='12' y='18' width='76' height='36' rx='5' fill='#111827'/><rect x='12' y='18' width='76' height='7' rx='3' fill='#4ade80'/><circle cx='30' cy='40' r='5' fill='#374151'/>"},
+{k:"x360",n:"Xbox 360",id:14,a:["xbox 360"],c:["#84cc16","#365314"],s:"<rect x='14' y='16' width='72' height='40' rx='10' fill='#e5e7eb'/><circle cx='34' cy='36' r='11' fill='#22c55e'/><circle cx='34' cy='36' r='5' fill='#e5e7eb'/><rect x='54' y='30' width='22' height='3' rx='1.5' fill='#9ca3af'/><rect x='54' y='38' width='22' height='3' rx='1.5' fill='#9ca3af'/>"},
+{k:"switch",n:"Switch",id:7,a:["nintendo switch"],c:["#ef4444","#1e3a8a"],s:"<rect x='6' y='16' width='20' height='42' rx='8' fill='#ef4444'/><rect x='74' y='16' width='20' height='42' rx='8' fill='#38bdf8'/><rect x='28' y='18' width='44' height='38' rx='4' fill='#111827'/><rect x='31' y='21' width='38' height='32' rx='2' fill='#7dd3fc'/>"}];
+const AV=["😎","🦊","🐱","🐼","🤖","👾","🦄","🐙","🐶","🐸","🦁","🐯","🐵","🐧","🦉","🐲","👻","💀","🎃","🥷","🧙","🧛","🕹️","🎮","🏆","🔥","⭐","🍄","⚔️","🚀","👑","🎲"];
 let P;try{P=JSON.parse(ls.get("cnp"))}catch(e){}
 P=P||{uid:"u"+Math.random().toString(36).slice(2,10),name:"",av:"😎",consoles:[],cap:50,w:{},ptr:{},fr:[]};
 try{S=JSON.parse(ls.get("cnlib"))}catch(e){S=null}S=S||{own:[],done:[],save:[]};MAXD=P.cap;
@@ -189,8 +206,8 @@ const saveP=()=>{ls.set("cnp",JSON.stringify(P));ls.set("cnlib",JSON.stringify(S
 const PN=k=>(C.find(c=>c.k===k)||{}).n||"";
 const myIds=()=>C.filter(c=>P.consoles.includes(c.k)).map(c=>c.id).join(",");
 function platKey(d){const ids=(d.platforms||[]).map(x=>x.platform.id),sel=C.filter(c=>P.consoles.includes(c.k)),c=sel.concat(C).find(c=>ids.includes(c.id));return c?c.k:""}
-async function resolveIds(){let m;try{m=JSON.parse(ls.get("cnids"))}catch(e){}
-if(!m){const r=await api("platforms",{page_size:100});m={};for(const p of r.results){const c=C.find(c=>c.a.includes(p.name.toLowerCase()));if(c)m[c.k]=p.id}ls.set("cnids",JSON.stringify(m))}
+async function resolveIds(){let m;try{m=JSON.parse(ls.get("cnids2"))}catch(e){}
+if(!m){const r=await api("platforms",{page_size:100});m={};for(const p of r.results){const c=C.find(c=>c.a.includes(p.name.toLowerCase()));if(c)m[c.k]=p.id}ls.set("cnids2",JSON.stringify(m))}
 C.forEach(c=>{if(m[c.k])c.id=m[c.k]})}
 if(KEY)ready=resolveIds().catch(()=>{});
 /* aprendizaje */
@@ -255,51 +272,54 @@ setTimeout(()=>{if(t!==dvT)return;o.classList.remove("on");o.style.clipPath="";o
 /* reto anual */
 const YR=()=>new Date().getFullYear();
 const goalY=()=>(P.goals||{})[YR()]||0;
-const chal=()=>{const G=goalY();return G?` · Reto ${S.done.filter(g=>g.y===YR()||!g.y).length}/${G}`:""};
+const chal=()=>{const G=goalY();return G?` · Reto ${uniq(S.done.filter(g=>g.y===YR()||!g.y)).length}/${G}`:""};
 const ago=t=>{const d=Math.floor((Date.now()-t)/864e5);return d<1?"hoy":"hace "+d+(d===1?" día":" días")};
 function setGoal(n){if(!(n>0)){toast("Pon un número");return}P.goals=P.goals||{};P.goals[YR()]=Math.min(500,Math.round(n));render()}
 function openS(g){ctx={g,from:tab};const Y=YR();
-$("shb").innerHTML=`<h3>${esc(g.name)}</h3>`+(tab==="done"?`<p class="intro" style="text-align:center;margin:0 0 10px">¿Cuándo te lo pasaste?</p><div class="seg2">${[Y,Y-1,0].map(y=>`<button class="${g.y===y?"on":""}" data-act="yr" data-y="${y}">${y||"Antes"}</button>`).join("")}</div>`:"")+Object.keys(N).filter(l=>l!==tab).map(l=>`<button class="btn" data-act="mv" data-l="${l}">Mover a ${N[l]}</button>`).join("")+`<button class="btn rm" data-act="rm">Eliminar de la lista</button><button class="btn" data-act="close">Cancelar</button>`;$("sh").classList.add("on")}
-function retoView(v){const Y=YR(),G=goalY(),mine=S.done.filter(g=>g.y===Y),n=mine.length;
+$("shb").innerHTML=`<h3>${esc(g.name)}</h3>`+(tab==="done"?`<p class="intro" style="text-align:center;margin:0 0 10px">¿Cuándo te lo pasaste?</p><div class="seg2">${[Y,Y-1,0].map(y=>`<button class="${g.y===y?"on":""}" data-act="yr" data-y="${y}">${y||"Antes"}</button>`).join("")}</div>`:"")+(tab==="done"?`<button class="btn" data-act="rcpick">📨 Enviar recomendación</button>`:"")+Object.keys(N).filter(l=>l!==tab).map(l=>`<button class="btn" data-act="mv" data-l="${l}">Mover a ${N[l]}</button>`).join("")+`<button class="btn rm" data-act="rm">Eliminar de la lista</button><button class="btn" data-act="close">Cancelar</button>`;$("sh").classList.add("on")}
+function retoView(v){const Y=YR(),G=goalY(),mine=uniq(S.done.filter(g=>g.y===Y)),n=mine.length;
 let h=`<div class="dt">Reto anual</div><h1>🏆 ${Y}</h1>`;
 if(!G)h+=`<p class="intro">¿Cuántos juegos te quieres pasar este año? Puedes cambiarlo cuando quieras.</p><div class="seg2">${[5,10,12,20,30,50].map(x=>`<button data-act="goal" data-v="${x}">${x}</button>`).join("")}</div><input id="gi" type="number" min="1" max="500" placeholder="Otro número" ${inp}><button class="btn" data-act="goalc">Fijar reto</button>`;
 else{const doy=Math.floor((Date.now()-new Date(Y,0,0))/864e5),diff=Math.round(n-G*doy/365);
 h+=`<div class="hero2"><div class="big">${n}<small> / ${G}</small></div><div class="bar"><i style="width:${Math.min(100,Math.round(n/G*100))}%"></i></div><p style="margin:0;color:var(--mu)">${n>=G?"¡Reto cumplido! 🎉":diff===0?"Vas justo en el ritmo.":diff>0?`Vas ${diff} por delante del ritmo.`:`Vas ${-diff} por detrás del ritmo.`}</p></div><button class="btn ghost" data-act="goalr" style="margin:0 0 6px">Cambiar objetivo</button>`}
 h+=`<h4 class="h4">Mis pasados de ${Y}</h4>`+(n?`<div class="shelf">${mine.map(g=>`<div class="bk" style="background-image:url('${esc(th(g.img))}')"><span>${esc(g.name)}</span></div>`).join("")}</div>`:`<p class="intro">Aún no has marcado ningún juego como pasado este año. Desliza ↑ en una tarjeta o añádelo en Biblioteca → Pasados.</p>`);
-const ents=[{n:P.name,a:P.av,c:n,g:G,me:1}].concat(FR.map(f=>({n:f.n,a:f.a,c:f.d.filter(x=>x.y===Y).length,g:(f.g||{})[Y]||0,t:f.t}))).sort((a,b)=>b.c-a.c);
+const ents=[{n:P.name,a:P.av,c:n,g:G,me:1}].concat(FR.map(f=>({n:f.n,a:f.a,c:uniq(f.d.filter(x=>x.y===Y)).length,g:(f.g||{})[Y]||0,t:f.t}))).sort((a,b)=>b.c-a.c);
 h+=`<h4 class="h4">Clasificación con amigos</h4>`+(FR.length?ents.map((e,i)=>`<div class="row" style="${e.me?"outline:2px solid var(--ac)":""}"><b style="width:30px;font-size:20px;flex:none">${["🥇","🥈","🥉"][i]||i+1}</b><div class="cv sm" style="background:var(--bg);width:46px;height:46px;font-size:26px">${e.a}</div><div><b>${esc(e.n)}${e.me?" (tú)":""}</b><small>${e.c}${e.g?" de "+e.g:""} juego${e.c===1?"":"s"}${e.t?" · "+ago(e.t):""}</small></div></div>`).join("")+`<p class="intro">Los datos de tus amigos son los del último enlace que te enviaron. Pídeles que lo compartan de nuevo para actualizarlos.</p>`:`<div class="empty"><i>👥</i>Añade amigos en la pestaña Amigos y compite con ellos.</div>`);
 v.innerHTML=h+cr}
 /* cuentas y amigos (Supabase) */
 const SB_URL="https://rwzhlryxjwzainhcwasv.supabase.co",SB_KEY="sb_publishable_qstBfKdgirvNDZsAIFd_5Q_p4gakSta",SITE="https://axy98.github.io/onemoregame/";
 const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY):null;
 let U=null,PR=null,AM="login",AUTHREADY=false,REC=false,AB=false,AVM="",FR=[],FQ=[],lastSer="",pt=null;
-const ser=()=>JSON.stringify([P.consoles,P.cap,P.w,P.ptr,P.goals,S]);
+const ser=()=>JSON.stringify([P.consoles,P.cap,P.w,P.ptr,P.goals,P.mseen,S]);
 const sg=g=>({id:g.id,name:g.name,img:g.img,pl:g.pl,genre:g.genre,year:g.year,y:g.y});
 const setErr=m=>{const e=$("err");if(e)e.textContent=m};
 const tr=e=>{const m=(e.message||"").toLowerCase();return m.includes("invalid login")?"Correo o contraseña incorrectos.":m.includes("not confirmed")?"Confirma tu correo antes de entrar (revisa tu bandeja y el spam).":m.includes("already")?"Ese correo ya tiene cuenta.":m.includes("rate limit")||m.includes("too many")||m.includes("seconds")?"Demasiados intentos. Espera unos minutos.":m.includes("password")?"La contraseña no es válida (mínimo 8 caracteres).":"No se pudo completar. Inténtalo de nuevo."};
 function schedPush(){if(!U||!PR)return;clearTimeout(pt);pt=setTimeout(push,1500)}
 async function push(){if(!U||!PR)return;const s=ser();if(s===lastSer)return;lastSer=s;const t=new Date().toISOString();
-const a=await sb.from("private_data").update({data:{consoles:P.consoles,cap:P.cap,w:P.w,ptr:P.ptr,save:S.save.map(sg)},updated_at:t}).eq("user_id",U.id);
-const b=await sb.from("shared_data").update({own:S.own.map(sg),done:S.done.map(sg),goals:P.goals||{},updated_at:t}).eq("user_id",U.id);
+const a=await sb.from("private_data").update({data:{consoles:P.consoles,cap:P.cap,w:P.w,ptr:P.ptr,mseen:P.mseen||[],save:S.save.map(sg)},updated_at:t}).eq("user_id",U.id);
+const b=await sb.from("shared_data").update({own:S.own.map(sg),done:S.done.map(sg),consoles:P.consoles,goals:P.goals||{},updated_at:t}).eq("user_id",U.id);
 if(a.error||b.error){lastSer="";toast("No se pudo guardar en tu cuenta")}}
 document.addEventListener("visibilitychange",()=>{if(document.hidden)push()});
-function wipeLocal(){P.consoles=[];P.cap=50;P.w={};P.ptr={};P.goals={};P.name="";S.own=[];S.done=[];S.save=[];Q=[];lastSer="";ls.set("cnuid","");saveP()}
+function wipeLocal(){P.mseen=[];P.consoles=[];P.cap=50;P.w={};P.ptr={};P.goals={};P.name="";S.own=[];S.done=[];S.save=[];Q=[];lastSer="";ls.set("cnuid","");saveP()}
 async function pull(){const[a,b]=await Promise.all([sb.from("private_data").select("data").eq("user_id",U.id).maybeSingle(),sb.from("shared_data").select("own,done,goals").eq("user_id",U.id).maybeSingle()]);
 if(a.error||b.error)return;const pd=(a.data&&a.data.data)||{},sd=b.data||{},has=(pd.consoles||[]).length||(sd.own||[]).length||(sd.done||[]).length,last=ls.get("cnuid");
-if(has){P.consoles=pd.consoles||[];P.cap=pd.cap||50;P.w=pd.w||{};P.ptr=pd.ptr||{};P.goals=sd.goals||{};S.own=sd.own||[];S.done=sd.done||[];S.save=pd.save||[];lastSer=ser()}
-else if(last&&last!==U.id){P.consoles=[];P.cap=50;P.w={};P.ptr={};P.goals={};S.own=[];S.done=[];S.save=[];lastSer=ser()}
+if(has){P.consoles=pd.consoles||[];P.cap=pd.cap||50;P.w=pd.w||{};P.ptr=pd.ptr||{};P.mseen=pd.mseen||[];P.goals=sd.goals||{};S.own=sd.own||[];S.done=sd.done||[];S.save=pd.save||[];lastSer=ser()}
+else if(last&&last!==U.id){P.mseen=[];P.consoles=[];P.cap=50;P.w={};P.ptr={};P.goals={};S.own=[];S.done=[];S.save=[];lastSer=ser()}
 else lastSer="";
-MAXD=P.cap;Q=[];ls.set("cnuid",U.id);P.name=PR.username;P.av=PR.avatar;saveP();schedPush()}
-async function onSession(ses){U=ses.user;const{data:pr}=await sb.from("profiles").select("id,username,avatar").eq("id",U.id).maybeSingle();PR=pr;if(!pr)return;P.name=pr.username;P.av=pr.avatar;await pull();loadFriends()}
-async function loadFriends(){if(!U)return;try{const{data:fs}=await sb.from("friendships").select("id,requester,addressee,status");let q=fs||[];
-const ids=[...new Set(q.flatMap(f=>[f.requester,f.addressee]))].filter(i=>i!==U.id);let pf=[],sd=[];
+MAXD=P.cap;Q=[];ls.set("cnuid",U.id);P.name=PR.username;P.av=PR.avatar;lastSer="";saveP();schedPush()}
+async function onSession(ses){U=ses.user;const{data:pr}=await sb.from("profiles").select("id,username,avatar,username_changed_at").eq("id",U.id).maybeSingle();PR=pr;if(!pr)return;P.name=pr.username;P.av=pr.avatar;await pull();loadFriends()}
+async function loadFriends(){if(!U)return;try{
+const[fsr,rcr]=await Promise.all([sb.from("friendships").select("id,requester,addressee,status"),sb.from("recommendations").select("id,from_user,game,created_at").eq("to_user",U.id).order("created_at",{ascending:false})]);
+const q=fsr.data||[],rc=rcr.data||[];
+const ids=[...new Set(q.flatMap(f=>[f.requester,f.addressee]).concat(rc.map(r=>r.from_user)))].filter(i=>i!==U.id);let pf=[],sd=[];
 if(ids.length){pf=(await sb.from("profiles").select("id,username,avatar").in("id",ids)).data||[];
 const acc=q.filter(f=>f.status==="accepted").map(f=>f.requester===U.id?f.addressee:f.requester);
-if(acc.length)sd=(await sb.from("shared_data").select("user_id,own,done,goals,updated_at").in("user_id",acc)).data||[]}
+if(acc.length)sd=(await sb.from("shared_data").select("user_id,own,done,goals,consoles,updated_at").in("user_id",acc)).data||[]}
 const pm=Object.fromEntries(pf.map(p=>[p.id,p]));
-FR=sd.map(s=>{const p=pm[s.user_id]||{},done=s.done||[];return{u:s.user_id,n:p.username||"?",a:p.avatar||"😎",d:done,o:(s.own||[]).filter(g=>!done.some(x=>x.id===g.id)),g:s.goals||{},t:Date.parse(s.updated_at)||Date.now()}});
+FR=sd.map(s=>{const p=pm[s.user_id]||{},done=s.done||[];return{u:s.user_id,n:p.username||"?",a:p.avatar||"😎",d:done,o:(s.own||[]).filter(g=>!done.some(x=>x.id===g.id)),g:s.goals||{},c:s.consoles||[],t:Date.parse(s.updated_at)||Date.now()}});
 FQ=q.map(f=>{const o=f.requester===U.id?f.addressee:f.requester;return{...f,o,p:pm[o]||{username:"?",avatar:"😎"},mine:f.requester===U.id}});
-if(tab==="fr"||tab==="reto")render()}catch(e){}}
+RC=rc.map(r=>({id:r.id,g:r.game,p:pm[r.from_user]||{username:"?",avatar:"😎"}}));
+if(tab==="fr"||tab==="reto")render();checkMatches()}catch(e){}}
 function initAuth(){if(!sb){AUTHREADY=true;return}
 sb.auth.onAuthStateChange((ev,ses)=>{setTimeout(async()=>{
 if(ev==="PASSWORD_RECOVERY")REC=true;
@@ -327,9 +347,9 @@ function authView(v){const eb=`<p class="err" id="err"></p>`,em=`<input id="em" 
 if(AM==="verify"){v.innerHTML=`<h1>📬 Revisa tu correo</h1><p class="intro">${AVM}</p><button class="btn" data-act="am" data-m="login">Volver a iniciar sesión</button>`+cr;return}
 if(AM==="reg"){v.innerHTML=`<h1>Crear cuenta</h1><p class="intro">Elige un nombre de usuario: así te encontrarán tus amigos.</p>${eb}<input id="un" placeholder="Nombre de usuario" maxlength="20" autocapitalize="off" autocomplete="username" ${inp}>${em}${pw("new-password")}<div class="avs">${AV.map(a=>`<button class="${a===dav?"on":""}" data-act="av" data-v="${a}">${a}</button>`).join("")}</div><button class="btn" data-act="reg">Crear cuenta</button><button class="btn ghost" data-act="am" data-m="login">Ya tengo cuenta</button>`+cr;return}
 if(AM==="forgot"){v.innerHTML=`<h1>Recuperar contraseña</h1><p class="intro">Escribe tu correo y te enviaremos un enlace para crear una nueva.</p>${eb}${em}<button class="btn" data-act="forgot">Enviar enlace</button><button class="btn ghost" data-act="am" data-m="login">Volver</button>`+cr;return}
-v.innerHTML=`<h1>🎮 Juegos Diarios</h1><p class="intro">Inicia sesión para guardar tu biblioteca y jugar con tus amigos.</p>${eb}${em}${pw("current-password")}<button class="btn" data-act="login">Entrar</button><button class="btn ghost" data-act="am" data-m="forgot">He olvidado mi contraseña</button><button class="btn ghost" data-act="am" data-m="reg">Crear cuenta</button>`+cr}
+v.innerHTML=loginHero()+`<h1>🎮 One More Game</h1><p class="intro">Inicia sesión para guardar tu biblioteca y jugar con tus amigos.</p>${eb}${em}${pw("current-password")}<button class="btn" data-act="login">Entrar</button><button class="btn ghost" data-act="am" data-m="forgot">He olvidado mi contraseña</button><button class="btn ghost" data-act="am" data-m="reg">Crear cuenta</button>`+cr}
 function frCloud(v){const inc=FQ.filter(f=>!f.mine&&f.status==="pending"),out=FQ.filter(f=>f.mine&&f.status==="pending"),av=a=>`<div class="cv sm" style="background:var(--bg);width:46px;height:46px;font-size:26px">${a}</div>`;
-v.innerHTML=`<h1>Amigos</h1><p class="intro">Tu usuario es <b>@${esc(P.name)}</b>. Busca a tus amigos por su nombre de usuario.</p><div class="add"><input id="fq" placeholder="Buscar usuario…" autocapitalize="off" autocomplete="off"></div><div id="fres"></div>`
+v.innerHTML=`<h1>Amigos</h1><p class="intro">Tu usuario es <b>@${esc(P.name)}</b>. Busca a tus amigos por su nombre de usuario.</p><div class="add"><input id="fq" placeholder="Buscar usuario…" autocapitalize="off" autocomplete="off"></div><div id="fres"></div>${matchSec()}${recSec()}`
 +(inc.length?`<h4 class="h4">Solicitudes recibidas</h4>`+inc.map(f=>`<div class="row">${av(f.p.avatar)}<div><b>@${esc(f.p.username)}</b></div><span class="go"><button class="mini2" data-act="facc" data-id="${f.id}">Aceptar</button> <button class="mini2 gr" data-act="frej" data-id="${f.id}">✕</button></span></div>`).join(""):"")
 +(out.length?`<h4 class="h4">Solicitudes enviadas</h4>`+out.map(f=>`<div class="row">${av(f.p.avatar)}<div><b>@${esc(f.p.username)}</b><small>Pendiente</small></div><span class="go"><button class="mini2 gr" data-act="frej" data-id="${f.id}">Cancelar</button></span></div>`).join(""):"")
 +`<h4 class="h4">Mis amigos</h4>`+(FR.length?FR.map(f=>`<button class="row" data-act="fopen" data-u="${f.u}">${av(f.a)}<div><b>@${esc(f.n)}</b><small>${f.o.length+f.d.length} juegos · ${f.d.length} pasados</small></div><span class="go">›</span></button>`).join(""):`<div class="empty"><i>👥</i>Todavía no tienes amigos añadidos.</div>`)+cr;
@@ -345,8 +365,37 @@ if(!U){nv.innerHTML="";authView(v);return}
 if(!PR){nv.innerHTML="";v.innerHTML=`<div class="empty"><i>⚠️</i>No se encontró tu perfil.<br>Cierra sesión y vuelve a entrar.</div><button class="btn" data-act="logout">Cerrar sesión</button>`;return}
 if(!P.consoles.length){nv.innerHTML="";v.innerHTML=`<h1>¡Hola, ${esc(P.name)}! 👋</h1><p class="intro">Elige las consolas que tienes. Solo te recomendaré juegos de ellas, y podrás añadir más cuando quieras.</p><div class="grid">${C.map(c=>tile(c,draft.includes(c.k))).join("")}</div><button class="btn" data-act="obgo" style="margin-top:18px">Empezar</button>`+cr;return}
 render0();
-if(tab==="fr"&&!FV)frCloud(v);
-if(tab==="me"){v.querySelectorAll('[data-act="share"],[data-act="key"]').forEach(b=>b.remove());v.insertAdjacentHTML("beforeend",`<button class="btn ghost" data-act="logout">Cerrar sesión</button>`)}}
+if(tab==="fr"){FV?friendView(v):frCloud(v)}
+if(tab==="me"){v.querySelectorAll('[data-act="share"],[data-act="key"]').forEach(b=>b.remove());v.insertAdjacentHTML("beforeend",meExtra()+`<button class="btn ghost" data-act="logout">Cerrar sesión</button>`)}
+const nb=FQ.filter(f=>!f.mine&&f.status==="pending").length+RC.length;if(nb){const b=document.querySelector('#nav button[data-t="fr"]');if(b)b.insertAdjacentHTML("beforeend",`<em>${nb}</em>`)}
+checkMatches()}
+/* v2: ediciones, matches, recomendaciones, perfil, consolas */
+const nk=n=>String(n||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+.replace(/\([^)]*\b(edition|version|remaster(ed)?|deluxe|goty|cut)\b[^)]*\)/g," ")
+.replace(/[:\-–—]\s*(the\s+)?(deluxe|definitive|complete|ultimate|gold|platinum|premium|special|standard|collector'?s|legendary|enhanced|anniversary|game of the year|goty|director'?s)\b.*$/,"")
+.replace(/\b(the\s+)?(deluxe|definitive|complete|ultimate|gold|platinum|premium|special|standard|collector'?s|legendary|enhanced|anniversary|game of the year|goty|director'?s)\s+(edition|version|cut|pack)\b/g," ")
+.replace(/\b(remastered|remaster|hd remaster)\b/g," ").replace(/[^a-z0-9]+/g," ").replace(/\b(the|a|an)\b/g," ").replace(/\s+/g," ").trim();
+const uniq=a=>{const s=new Set();return a.filter(g=>{const k=nk(g.name)+"|"+(g.pl||"");if(s.has(k))return false;s.add(k);return true})};
+let LF="all",RC=[],RTO=null,RCL=[];
+const setErr2=m=>{const e=$("err2");if(e)e.textContent=m};
+function groupRows(pairs,mk){const gr={};pairs.forEach(p=>{(gr[p[0].pl||""]=gr[p[0].pl||""]||[]).push(p)});
+return C.map(c=>c.k).concat([""]).filter(k=>gr[k]).map(k=>`<h4 class="h4">${k?PN(k):"Otras"} · ${gr[k].length}</h4>`+gr[k].map(p=>mk(p[0],p[1])).join("")).join("")}
+function libChips(){const ks=[...new Set(S[tab].map(g=>g.pl||""))];if(ks.length<2)return"";return`<div class="chips"><button class="cp ${LF==="all"?"on":""}" data-act="lf" data-k="all">Todas</button>${C.filter(c=>ks.includes(c.k)).map(c=>`<button class="cp ${LF===c.k?"on":""}" data-act="lf" data-k="${c.k}">${c.n}</button>`).join("")}</div>`}
+const libRows=L=>groupRows(L.map((g,i)=>[g,i]).filter(p=>LF==="all"||p[0].pl===LF),(g,i)=>row(g,"row",i,"⋯"));
+const matches=()=>{const mine=new Map();S.done.forEach(g=>{const k=nk(g.name);if(!mine.has(k))mine.set(k,g)});const o=[];FR.forEach(f=>{const s=new Set();f.d.forEach(g=>{const k=nk(g.name);if(mine.has(k)&&!s.has(k)){s.add(k);o.push({f,g:mine.get(k),k})}})});return o};
+function matchSec(){const m=matches();if(!m.length)return"";return`<h4 class="h4">💘 Matches · ${m.length}</h4>`+m.map(x=>`<div class="row">${cvh(x.g,"sm")}<div><b>${esc(x.g.name)}</b><small>${x.f.a} @${esc(x.f.n)} también se lo ha pasado</small></div><span class="go">💘</span></div>`).join("")}
+function recSec(){if(!RC.length)return"";return`<h4 class="h4">📨 Recomendaciones · ${RC.length}</h4>`+RC.map(r=>`<div class="row">${cvh(r.g,"sm")}<div><b>${esc(r.g.name)}</b><small>${r.p.avatar} @${esc(r.p.username)} te lo recomienda</small></div><span class="go"><button class="mini2" data-act="rcsave" data-id="${r.id}">🔖</button> <button class="mini2 gr" data-act="rcdel" data-id="${r.id}">✕</button></span></div>`).join("")}
+function checkMatches(){const o=$("mt");if(!o||!U||o.classList.contains("on"))return;const seen=P.mseen=P.mseen||[],nw=matches().filter(m=>!seen.includes(m.f.u+"|"+m.k));if(!nw.length)return;
+nw.forEach(m=>seen.push(m.f.u+"|"+m.k));saveP();const m=nw[0];
+o.innerHTML=`<div><div class="mh">It's a match!</div><div class="mav"><span>${P.av}</span><span>${m.f.a}</span></div><p style="font-size:17px;margin:14px 0 0">Tú y <b>@${esc(m.f.n)}</b> os habéis pasado</p><div class="mg" style="background-image:url('${esc(m.g.img)}')"><span>${esc(m.g.name)}</span></div>${nw.length>1?`<small>y ${nw.length-1} match${nw.length>2?"es":""} más en la pestaña Amigos</small>`:""}<button class="btn" data-act="mclose" style="background:#fff;color:#7c3aed;margin-top:14px">¡Genial!</button><button class="btn ghost" data-act="mprof" data-u="${m.f.u}" style="color:#fff!important">Ver su perfil</button></div>`;o.classList.add("on")}
+async function sendRec(to,g){if(!g)return;await push();const{error}=await sb.from("recommendations").insert({from_user:U.id,to_user:to,game_id:g.id,game:sg(g)});closeS();toast(error?(error.code==="23505"?"Ya le recomendaste ese juego":"No se pudo enviar"):"📨 Recomendación enviada")}
+function friendView(v){const f=FR.find(x=>x.u===FV);if(!f){FV=null;frCloud(v);return}
+const cons=(f.c||[]).map(k=>C.find(x=>x.k===k)).filter(Boolean).map(c=>`<span class="cc" style="background:linear-gradient(145deg,${c.c[0]},${c.c[1]})"><svg viewBox="0 0 100 70">${c.s}</svg>${c.n}</span>`).join("");
+const L=listOf(f,fseg).map((g,i)=>[g,i]);
+v.innerHTML=`<button class="btn ghost" data-act="fback" style="text-align:left;margin:0">‹ Amigos</button><div class="dt">Perfil</div><h1>${f.a} @${esc(f.n)}</h1><div class="cons">${cons||"<small style='color:var(--mu)'>Aún no ha indicado sus consolas</small>"}</div><p class="intro">${f.d.length+f.o.length} juegos · ${f.d.length} pasados</p><button class="btn" data-act="rcsel" data-u="${f.u}">📨 Enviar recomendación</button><div class="seg2"><button class="${fseg==="pl"?"on":""}" data-act="fseg" data-v="pl">Tiene ${f.d.length+f.o.length}</button><button class="${fseg==="d"?"on":""}" data-act="fseg" data-v="d">Pasados ${f.d.length}</button></div>`+(L.length?groupRows(L,(g,i)=>row(g,"fsave",i,"🔖")):`<div class="empty">Nada por aquí.</div>`)+`<button class="btn ghost" data-act="fdel" data-u="${f.u}">Eliminar amigo</button>`+cr}
+function meExtra(){const ch=PR&&PR.username_changed_at?new Date(PR.username_changed_at):null,nx=ch?new Date(ch.getTime()+30*864e5):null,wait=nx&&nx>new Date();
+return`<h4 class="h4">Foto de perfil</h4><div class="avs">${AV.map(a=>`<button class="${a===P.av?"on":""}" data-act="setav" data-v="${a}">${a}</button>`).join("")}</div><h4 class="h4">Nombre de usuario</h4><p class="intro">@${esc(P.name)} · ${wait?"Podrás cambiarlo el "+nx.toLocaleDateString("es-ES"):"Solo se puede cambiar una vez cada 30 días."}</p>${wait?"":`<p class="err" id="err"></p><input id="nu" placeholder="Nuevo nombre de usuario" maxlength="20" autocapitalize="off" ${inp}><button class="btn" data-act="setun">Cambiar nombre</button>`}<h4 class="h4">Zona peligrosa</h4><button class="btn" data-act="delacc" style="background:#7f1d1d">Borrar mi cuenta</button>`}
+function loginHero(){const rot=[-8,6,-4,7,-6,5];return`<div class="lh"><span class="st s1">✦</span><span class="st s2">✧</span><span class="st s3">✦</span><div class="lg">${["ps2","switch","gba","psp","x360","ds"].map((k,i)=>`<svg viewBox="0 0 100 70" style="transform:rotate(${rot[i]}deg)">${C.find(c=>c.k===k).s}</svg>`).join("")}</div><div class="lt">PRESS START</div></div>`}
 /* vistas */
 const row=(g,a,i,ic)=>`<button class="row" data-act="${a}" data-i="${i}">${cvh(g,"sm")}<div><b>${esc(g.name)}</b><small>${esc([PN(g.pl),g.genre,g.year].filter(Boolean).join(" · "))}</small></div><span class="go">${ic}</span></button>`;
 const tile=(c,on)=>`<button class="tile ${on?"on":""}" data-act="ctog" data-k="${c.k}" style="background:linear-gradient(145deg,${c.c[0]},${c.c[1]})"><svg viewBox="0 0 100 70">${c.s}</svg>${c.n}</button>`;
@@ -354,12 +403,12 @@ const inp='style="width:100%;padding:13px 14px;border-radius:14px;border:0;backg
 function plist(f,own){const L=listOf(f,fseg);return`<div class="seg2"><button class="${fseg==="pl"?"on":""}" data-act="fseg" data-v="pl">Tiene ${f.d.length+f.o.length}</button><button class="${fseg==="d"?"on":""}" data-act="fseg" data-v="d">Pasados ${f.d.length}</button></div>`+(L.length?L.map((g,i)=>row(g,own?"fsave":"none",i,own?"🔖":"")).join(""):`<div class="empty">Nada por aquí.</div>`)}
 function render0(){clearInterval(lk);S.done.forEach(g=>{if(!g.y)g.y=new Date().getFullYear()});saveP();const v=$("v"),nv=$("nav");
 if(SV){nv.innerHTML="";v.innerHTML=`<div class="dt">Perfil compartido</div><h1>${SV.a} ${esc(SV.n)}</h1>`+plist(SV,!!P.name)+`<button class="btn" data-act="svadd" style="margin-top:12px">${P.name?"➕ Añadir a mis amigos":"Crear mi perfil y añadirlo"}</button><button class="btn ghost" data-act="svx">Cerrar</button>`+cr;return}
-if(!KEY){nv.innerHTML="";v.innerHTML=`<h1>🎮 Juegos Diarios</h1><div class="k"><p>Para cargar los juegos con sus portadas necesitas una clave gratuita de RAWG:</p><p>1. Entra en <a href="https://rawg.io/apidocs" target="_blank" rel="noopener">rawg.io/apidocs</a> y crea tu cuenta.<br>2. Copia tu API key y pégala aquí.</p><input id="kk" placeholder="Tu API key de RAWG" autocapitalize="off" autocorrect="off"><button class="btn" data-act="savekey">Guardar y empezar</button></div>`+cr;return}
+if(!KEY){nv.innerHTML="";v.innerHTML=`<h1>🎮 One More Game</h1><div class="k"><p>Para cargar los juegos con sus portadas necesitas una clave gratuita de RAWG:</p><p>1. Entra en <a href="https://rawg.io/apidocs" target="_blank" rel="noopener">rawg.io/apidocs</a> y crea tu cuenta.<br>2. Copia tu API key y pégala aquí.</p><input id="kk" placeholder="Tu API key de RAWG" autocapitalize="off" autocorrect="off"><button class="btn" data-act="savekey">Guardar y empezar</button></div>`+cr;return}
 if(!P.name){nv.innerHTML="";v.innerHTML=`<h1>🎮 Crea tu perfil</h1><p class="intro">Elige tu nombre y las consolas que tienes. Solo te recomendaré juegos de ellas, y podrás añadir más cuando quieras.</p><input id="pn" placeholder="Tu nombre" maxlength="24" ${inp}><div class="avs">${AV.map(a=>`<button class="${a===dav?"on":""}" data-act="av" data-v="${a}">${a}</button>`).join("")}</div><h4 class="h4">¿Qué consolas tienes?</h4><div class="grid">${C.map(c=>tile(c,draft.includes(c.k))).join("")}</div><button class="btn" data-act="obgo" style="margin-top:18px">Empezar</button>`+cr;return}
 const lib=["own","done","save"].includes(tab);
 nv.innerHTML=[["hoy","🔥","Descubrir"],["own","📚","Biblioteca"],["reto","🏆","Reto"],["fr","👥","Amigos"],["me","👤","Yo"]].map(([k,i,n])=>`<button class="${(k==="own"?lib:tab===k)?"on":""}" data-act="tab" data-t="${k}"><i>${i}</i>${n}</button>`).join("");
 if(tab==="hoy"){deckRender();return}
-if(lib){const L=S[tab];v.innerHTML=`<h1>Biblioteca</h1><div class="seg2">${["own","done","save"].map(k=>`<button class="${tab===k?"on":""}" data-act="tab" data-t="${k}">${N[k]} ${S[k].length}</button>`).join("")}</div><div class="add"><input id="n" placeholder="Buscar un juego para añadir…" autocomplete="off"></div><div id="sr"></div>`+(L.length?L.map((g,i)=>row(g,"row",i,"⋯")).join(""):`<div class="empty"><i>📚</i>Nada por aquí todavía.</div>`)+cr;
+if(lib){const L=S[tab];v.innerHTML=`<h1>Biblioteca</h1><div class="seg2">${["own","done","save"].map(k=>`<button class="${tab===k?"on":""}" data-act="tab" data-t="${k}">${N[k]} ${S[k].length}</button>`).join("")}</div>${libChips()}<div class="add"><input id="n" placeholder="Buscar un juego para añadir…" autocomplete="off"></div><div id="sr"></div>`+(L.length?libRows(L):`<div class="empty"><i>📚</i>Nada por aquí todavía.</div>`)+cr;
 $("n").oninput=e=>{clearTimeout(sq);const q=e.target.value.trim();if(q.length<2){$("sr").innerHTML="";return}sq=setTimeout(()=>{sget(q).then(r=>{sres=r;if($("n").value.trim()!==q)return;$("sr").innerHTML=sres.length?sres.map((g,i)=>row(g,"pick2",i,"＋")).join(""):`<div class="empty">Sin resultados.</div>`}).catch(e=>{$("sr").innerHTML=errBox(e)})},350)};return}
 if(tab==="reto"){retoView(v);return}
 if(tab==="fr"){const f=FV&&FR.find(x=>x.u===FV);
@@ -368,6 +417,7 @@ v.innerHTML=`<h1>Amigos</h1><p class="intro">Comparte tu enlace para que tus ami
 const top=Object.entries(P.w).filter(([k,x])=>k[0]==="g"&&x>0).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k])=>k.slice(2).replace(/-/g," "));
 v.innerHTML=`<div class="dt">Mi perfil</div><h1>${P.av} ${esc(P.name)}</h1><p class="intro">${S.own.length} juegos · ${S.done.length} pasados · ${S.save.length} guardados</p><h4 class="h4">Mis consolas</h4><div class="grid">${C.map(c=>tile(c,P.consoles.includes(c.k))).join("")}</div><p class="intro" style="margin-top:8px">Pulsa para añadir o quitar consolas. Las que se incluyan en futuras versiones de la app aparecerán aquí.</p><h4 class="h4">Juegos al día</h4><div class="seg2">${[50,75,100].map(n=>`<button class="${P.cap===n?"on":""}" data-act="cap" data-v="${n}">${n}</button>`).join("")}</div><h4 class="h4">Lo que he aprendido de ti</h4><p class="intro">${top.length?"Te gustan: "+top.join(", ")+". Te enseñaré más juegos así.":"Guarda juegos o márcalos como tuyos y pasados, y empezaré a enseñarte juegos parecidos."}</p><button class="btn" data-act="share">📤 Compartir mi perfil</button><button class="btn ghost" data-act="key">Cambiar clave de RAWG</button>`+cr}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act,d=b.dataset;
+if(a==="tab")LF="all";
 if(a==="ctog"){const k=d.k;if(!P.consoles.length){draft=draft.includes(k)?draft.filter(x=>x!==k):draft.concat(k);b.classList.toggle("on")}else{const has=P.consoles.includes(k);if(has&&P.consoles.length===1){toast("Necesitas al menos una consola");return}P.consoles=has?P.consoles.filter(x=>x!==k):P.consoles.concat(k);Q=[];render()}}
 else if(a==="av"){dav=d.v;document.querySelectorAll(".avs button").forEach(x=>x.classList.toggle("on",x.dataset.v===dav))}
 else if(a==="obgo"){if(!draft.length){toast("Elige al menos una consola");return}P.consoles=draft.slice();render()}
@@ -390,6 +440,26 @@ else if(a==="freq"){const{error}=await sb.from("friendships").insert({requester:
 else if(a==="facc"){await sb.from("friendships").update({status:"accepted"}).eq("id",+d.id);toast("Amigo añadido");await loadFriends();render()}
 else if(a==="frej"){await sb.from("friendships").delete().eq("id",+d.id);await loadFriends();render()}
 else if(a==="tab"&&(d.t==="fr"||d.t==="reto"))loadFriends();
+else if(a==="lf"){LF=d.k;render()}
+else if(a==="mclose"){const o=$("mt");o.classList.remove("on");o.innerHTML=""}
+else if(a==="mprof"){const o=$("mt");o.classList.remove("on");o.innerHTML="";FV=d.u;fseg="pl";tab="fr";render()}
+else if(a==="rcsel"){RTO=d.u;RCL=uniq(S.done);if(!RCL.length){toast("Solo puedes recomendar juegos que te hayas pasado");return}
+$("shb").innerHTML=`<h3>¿Qué juego le recomiendas?</h3><p class="intro" style="text-align:center">Solo de los que te has pasado.</p><div style="max-height:55vh;overflow:auto">${RCL.map((g,i)=>row(g,"rcgo",i,"📨")).join("")}</div><button class="btn" data-act="close" style="margin-top:8px">Cancelar</button>`;$("sh").classList.add("on")}
+else if(a==="rcgo")sendRec(RTO,RCL[+d.i]);
+else if(a==="rcpick"){if(!FR.length){toast("Aún no tienes amigos añadidos");return}
+$("shb").innerHTML=`<h3>¿A quién se lo envías?</h3><div style="max-height:55vh;overflow:auto">${FR.map(f=>`<button class="row" data-act="rcto" data-u="${f.u}"><div class="cv sm" style="background:var(--card);width:46px;height:46px;font-size:26px">${f.a}</div><div><b>@${esc(f.n)}</b></div><span class="go">📨</span></button>`).join("")}</div><button class="btn" data-act="close" style="margin-top:8px">Cancelar</button>`}
+else if(a==="rcto")sendRec(d.u,ctx.g);
+else if(a==="rcsave"){const r=RC.find(x=>x.id===+d.id);if(r){addL("save",r.g);await sb.from("recommendations").delete().eq("id",r.id);toast("🔖 Guardado en tu biblioteca");await loadFriends();render()}}
+else if(a==="rcdel"){await sb.from("recommendations").delete().eq("id",+d.id);await loadFriends();render()}
+else if(a==="setav"){P.av=d.v;PR.avatar=d.v;await sb.from("profiles").update({avatar:d.v}).eq("id",U.id);toast("Foto actualizada");render()}
+else if(a==="setun"){const nu=$("nu").value.trim().toLowerCase();if(!/^[a-z0-9_]{3,20}$/.test(nu)){setErr("Usuario: de 3 a 20 caracteres, solo letras, números y _");return}if(nu===P.name){setErr("Ese ya es tu nombre.");return}
+const{error}=await sb.from("profiles").update({username:nu}).eq("id",U.id);
+if(error){setErr(String(error.message).includes("USERNAME_COOLDOWN")?"Solo puedes cambiar el nombre cada 30 días.":error.code==="23505"?"Ese nombre ya está cogido.":"No se pudo cambiar el nombre.");return}
+P.name=nu;PR.username=nu;PR.username_changed_at=new Date().toISOString();toast("Nombre cambiado");render()}
+else if(a==="delacc"){$("shb").innerHTML=`<h3>¿Borrar tu cuenta?</h3><p class="intro" style="text-align:center">Se borrarán para siempre tu perfil, tu biblioteca, tu reto y tus amistades. No se puede deshacer.</p><p class="err" id="err2"></p><input id="dc" placeholder="Escribe BORRAR para confirmar" ${inp}><button class="btn" data-act="delgo" style="background:#7f1d1d;color:#fff">Borrar definitivamente</button><button class="btn" data-act="close">Cancelar</button>`;$("sh").classList.add("on")}
+else if(a==="delgo"){if($("dc").value.trim().toUpperCase()!=="BORRAR"){setErr2("Escribe BORRAR para confirmar.");return}
+const{error}=await sb.rpc("delete_my_account");if(error){setErr2("No se pudo borrar. Inténtalo de nuevo.");return}
+closeS();await sb.auth.signOut();wipeLocal();AM="login";toast("Cuenta borrada")}
 else if(a==="savekey")ready=resolveIds().catch(()=>{})});
 if(location.hash.startsWith("#p=")){dec(location.hash.slice(3)).then(f=>{SV=f;fseg="pl";history.replaceState(null,"",location.pathname);render()}).catch(()=>{})}
 initAuth();render();
