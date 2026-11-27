@@ -140,6 +140,7 @@ if(first&&c.length){const k=(day*7)%c.length;c=c.slice(k).concat(c.slice(0,k));c
 Q=Q.concat(c)}finally{loading=false}}
 async function deckRender(){const v=$("v"),t=++rt,d=new Date().toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"});
 if(LIM.until&&Date.now()>=LIM.until){LIM={n:0,until:0};saveLim()}
+if(LIM.until&&LIM.n<MAXD){LIM.until=0;saveLim()}
 if(LIM.until>Date.now()){lockScreen();return}
 const head=`<div class="dt">${d} · juego ${LIM.n+1} de ${MAXD}</div><h1>Descubre</h1>`;
 try{if(!Q.length){v.innerHTML=head+`<div class="empty"><i>⏳</i>Buscando juegos…</div>`;await fill()}else if(Q.length<8)fill().catch(()=>{})}catch(e){if(t===rt)v.innerHTML=head+errBox(e);return}
@@ -641,7 +642,7 @@ if(a==="tab"){LF="all";RFV=null;CH=null;CHB=""}
 if(a==="ctog"){const k=d.k;if(!P.consoles.length){draft=draft.includes(k)?draft.filter(x=>x!==k):draft.concat(k);b.classList.toggle("on")}else{const has=P.consoles.includes(k);if(has&&P.consoles.length===1){toast("Necesitas al menos una consola");return}P.consoles=has?P.consoles.filter(x=>x!==k):P.consoles.concat(k);Q=[];render()}}
 else if(a==="av"){dav=d.v;document.querySelectorAll(".avs button").forEach(x=>x.classList.toggle("on",x.dataset.v===dav))}
 else if(a==="obgo"){if(!draft.length){toast("Elige al menos una consola");return}P.consoles=draft.slice();render()}
-else if(a==="cap"){P.cap=MAXD=+d.v;render()}
+else if(a==="cap"){P.cap=MAXD=+d.v;if(LIM.until&&LIM.n<MAXD){LIM.until=0;saveLim()}else if(!LIM.until&&LIM.n>=MAXD){LIM.until=Date.now()+864e5;saveLim()}saveP();render()}
 else if(a==="share")shareMe();
 else if(a==="addf"){const t=$("fl").value.trim();try{addFriend(await dec(t.includes("#p=")?t.split("#p=")[1]:t));toast("Amigo añadido");render()}catch(x){toast("Enlace no válido")}}
 else if(a==="fopen"){FV=d.u;fseg="pl";render()}else if(a==="fback"){FV=null;render()}
