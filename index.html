@@ -99,7 +99,7 @@ small.pg,.pg{color:#16a34a;font-weight:700}
 .ci{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--bar);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--bd);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
 .ci div{display:flex;gap:8px;width:100%;max-width:560px}.ci input{flex:1;padding:12px 14px;border-radius:22px;border:0;background:var(--card);color:var(--tx);font-size:16px;outline:none}.ci input:disabled{opacity:.5}
 .ci button{width:46px;border-radius:50%;background:var(--ac);color:#fff;font-size:18px}
-</style></head><body>
+.cbw.me .cb2{cursor:pointer}</style></head><body>
 <div id="v"></div><nav><div id="nav"></div></nav>
 <div id="dv"></div><div id="mt"></div><div id="sh"><div class="s" id="shb"></div></div><div id="tt"></div>
 <script>
@@ -315,22 +315,22 @@ const b=await sb.from("shared_data").update({own:S.own.map(sg),done:S.done.map(s
 if(a.error||b.error){lastSer="";toast("No se pudo guardar en tu cuenta")}}
 document.addEventListener("visibilitychange",()=>{if(document.hidden)push()});
 function wipeLocal(){P.mseen=[];P.consoles=[];P.cap=50;P.w={};P.ptr={};P.goals={};P.name="";S.own=[];S.done=[];S.save=[];Q=[];lastSer="";ls.set("cnuid","");saveP()}
-async function pull(){const[a,b]=await Promise.all([sb.from("private_data").select("data").eq("user_id",U.id).maybeSingle(),sb.from("shared_data").select("own,done,goals,playing").eq("user_id",U.id).maybeSingle()]);
+async function pull(){const[a,b]=await Promise.all([sb.from("private_data").select("data").eq("user_id",U.id).maybeSingle(),sb.from("shared_data").select("own,done,goals").eq("user_id",U.id).maybeSingle()]);
 if(a.error||b.error)return;const pd=(a.data&&a.data.data)||{},sd=b.data||{},has=(pd.consoles||[]).length||(sd.own||[]).length||(sd.done||[]).length,last=ls.get("cnuid");
 if(has){P.consoles=pd.consoles||[];P.cap=pd.cap||50;P.w=pd.w||{};P.ptr=pd.ptr||{};P.mseen=pd.mseen||[];P.goals=sd.goals||{};S.own=sd.own||[];S.done=sd.done||[];S.save=pd.save||[];lastSer=ser()}
 else if(last&&last!==U.id){P.mseen=[];P.consoles=[];P.cap=50;P.w={};P.ptr={};P.goals={};S.own=[];S.done=[];S.save=[];lastSer=ser()}
 else lastSer="";
-MYPL=sd.playing||null;MAXD=P.cap;Q=[];ls.set("cnuid",U.id);P.name=PR.username;P.av=PR.avatar;lastSer="";saveP();schedPush()}
+{const rr=await sb.from("ready_status").select("playing").eq("user_id",U.id).maybeSingle();MYPL=(rr.data&&rr.data.playing)||null}MAXD=P.cap;Q=[];ls.set("cnuid",U.id);P.name=PR.username;P.av=PR.avatar;lastSer="";saveP();schedPush()}
 async function onSession(ses){U=ses.user;const{data:pr}=await sb.from("profiles").select("id,username,avatar,username_changed_at").eq("id",U.id).maybeSingle();PR=pr;if(!pr)return;P.name=pr.username;P.av=pr.avatar;await pull();await refreshAll();startRT()}
 async function loadFriends(quiet){if(!U)return;try{
 const[fsr,rcr]=await Promise.all([sb.from("friendships").select("id,requester,addressee,status"),sb.from("recommendations").select("id,from_user,game,created_at").eq("to_user",U.id).order("created_at",{ascending:false})]);
 const q=fsr.data||[],rc=rcr.data||[];
-const ids=[...new Set(q.flatMap(f=>[f.requester,f.addressee]).concat(rc.map(r=>r.from_user)))].filter(i=>i!==U.id);let pf=[],sd=[];
+const ids=[...new Set(q.flatMap(f=>[f.requester,f.addressee]).concat(rc.map(r=>r.from_user)))].filter(i=>i!==U.id);let pf=[],sd=[],rs=[];
 if(ids.length){pf=(await sb.from("profiles").select("id,username,avatar").in("id",ids)).data||[];
 const acc=q.filter(f=>f.status==="accepted").map(f=>f.requester===U.id?f.addressee:f.requester);
-if(acc.length)sd=(await sb.from("shared_data").select("user_id,own,done,goals,consoles,playing,updated_at").in("user_id",acc)).data||[]}
+if(acc.length){sd=(await sb.from("shared_data").select("user_id,own,done,goals,consoles,updated_at").in("user_id",acc)).data||[];rs=(await sb.from("ready_status").select("user_id,playing").in("user_id",acc)).data||[]}}
 const pm=Object.fromEntries(pf.map(p=>[p.id,p]));
-FR=sd.map(s=>{const p=pm[s.user_id]||{},done=s.done||[];return{u:s.user_id,pl:s.playing||null,n:p.username||"?",a:p.avatar||"😎",d:done,o:(s.own||[]).filter(g=>!done.some(x=>x.id===g.id)),g:s.goals||{},c:s.consoles||[],t:Date.parse(s.updated_at)||Date.now()}});
+FR=sd.map(s=>{const p=pm[s.user_id]||{},done=s.done||[];return{u:s.user_id,pl:((rs.find(r=>r.user_id===s.user_id)||{}).playing)||null,n:p.username||"?",a:p.avatar||"😎",d:done,o:(s.own||[]).filter(g=>!done.some(x=>x.id===g.id)),g:s.goals||{},c:s.consoles||[],t:Date.parse(s.updated_at)||Date.now()}});
 FQ=q.map(f=>{const o=f.requester===U.id?f.addressee:f.requester;return{...f,o,p:pm[o]||{username:"?",avatar:"😎"},mine:f.requester===U.id}});
 RC=rc.map(r=>({id:r.id,g:r.game,p:pm[r.from_user]||{username:"?",avatar:"😎"}}));
 const typing=document.activeElement&&document.activeElement.id==="rq";if(!quiet&&(tab==="fr"||tab==="reto"||tab==="ready")&&!typing)render();checkMatches()}catch(e){}}
@@ -443,7 +443,7 @@ $("avq").oninput=e=>{clearTimeout(sq);const q=e.target.value.trim();if(q.length<
 sq=setTimeout(()=>{sget(q).then(r=>{AVL=r;$("avl").innerHTML=avRows()}).catch(()=>{})},350)}}
 /* PLAYER READY, grupos de juego y mensajes */
 const RDYH=3;let RDY={sel:null},RL=[],MYPL=null,RFV=null,GSCB=null,FSCB=null,GL=[];
-let GR={},GM=[],MSGM=new Map(),LASTF=0,CH=null,CHB="",RT=null,POLL=0,NS=null,PRM={},RFB=false,CHF=false,qT=null;
+let GR={},GM=[],MSGM=new Map(),LASTF=0,LASTFULL=0,LASTR=0,MDEL=0,CH=null,CHB="",RT=null,POLL=0,NS=null,PRM={},RFB=false,CHF=false,qT=null;
 P.lr0=P.lr0||Date.now();
 const actv=p=>!!(p&&p.t&&p.game&&Date.parse(p.t)+RDYH*36e5>Date.now());
 const agoM=t=>{const m=Math.max(1,Math.round((Date.now()-Date.parse(t))/6e4));return m<60?"hace "+m+" min":"hace "+Math.floor(m/60)+" h"};
@@ -483,7 +483,10 @@ GR={};(g.data||[]).forEach(x=>GR[x.id]={id:x.id,host:x.host,g:x.game,t:x.created
 GM=(m.data||[]).filter(x=>GR[x.group_id]).map(x=>({gid:x.group_id,u:x.user_id,st:x.status,by:x.invited_by,t:x.created_at}));
 let q=sb.from("messages").select("id,group_id,from_user,to_user,body,sys,created_at");
 q=LASTF?q.gte("created_at",new Date(LASTF-18e4).toISOString()).order("id"):q.gte("created_at",since).order("id",{ascending:false}).limit(400);
-const r=await q;if(r.error)return;(r.data||[]).forEach(x=>MSGM.set(x.id,x));LASTF=t0;
+const r=await q;if(r.error)return;(r.data||[]).forEach(x=>MSGM.set(x.id,x));
+if(LASTF){const ids=new Set((r.data||[]).map(x=>x.id)),w=LASTF-18e4;MSGM.forEach((m,id)=>{if(Date.parse(m.created_at)>=w&&!ids.has(id))MSGM.delete(id)})}
+if(!LASTFULL||t0-LASTFULL>12e4){const f=await sb.from("messages").select("id").gte("created_at",since).limit(2000);if(!f.error&&f.data){const ids=new Set(f.data.map(x=>x.id));MSGM.forEach((m,id)=>{if(!ids.has(id))MSGM.delete(id)})}LASTFULL=t0}
+LASTF=t0;
 const need=[...new Set(GM.map(x=>x.u).concat(GM.map(x=>x.by),[...MSGM.values()].map(x=>x.from_user)))].filter(i=>i&&i!==U.id&&!PRM[i]&&!FR.some(f=>f.u===i)&&!FQ.some(f=>f.o===i));
 if(need.length){const pr=await sb.from("profiles").select("id,username,avatar").in("id",need);(pr.data||[]).forEach(p=>PRM[p.id]=p)}}catch(e){}}
 /* avisos */
@@ -491,16 +494,17 @@ function notifKeys(){const m=new Map();inbox().forEach(i=>{if(i.t==="req")m.set(
 allM().forEach(x=>{if(!x.sys&&x.from_user!==U.id&&Date.parse(x.created_at)>lrOf(msgKey(x)))m.set("m"+x.id,{t:"@"+pinfo(x.from_user).n,b:x.body.slice(0,80)})});return m}
 function notify(t,b){toast("🔔 "+t);if(window.Notification&&Notification.permission==="granted"&&document.hidden){try{new Notification(t,{body:b})}catch(e){}}}
 function checkNotif(){const cur=notifKeys();if(NS===null){NS=new Set(cur.keys());return}cur.forEach((v,k)=>{if(!NS.has(k)){NS.add(k);notify(v.t,v.b)}})}
-async function refreshAll(){if(!U||!PR||RFB)return;RFB=true;try{await loadFriends(true);await loadChat();if(CH)markRead(CH.k);checkNotif();uiRefresh()}catch(e){}finally{RFB=false}}
+async function refreshAll(){if(!U||!PR||RFB)return;RFB=true;LASTR=Date.now();try{await loadFriends(true);await loadChat();if(CH)markRead(CH.k);checkNotif();uiRefresh()}catch(e){}finally{RFB=false}}
 const qRefresh=()=>{clearTimeout(qT);qT=setTimeout(refreshAll,350)};
 function uiRefresh(){if(!U||!PR)return;if(tab==="msg"&&CH){chatUpdate();addBadges();return}
 const ae=document.activeElement,typing=ae&&["rq","gq","fq","avq","n","kk","em","pw","un","np","nu","dc","fl","ci"].includes(ae.id);
 if(["msg","ready","fr","reto"].includes(tab)&&!typing&&!$("sh").classList.contains("on")&&!$("dv").classList.contains("on"))render();else addBadges()}
 function startRT(){if(!sb||!U)return;if(!RT){try{const ch=sb.channel("omg-"+U.id);
 ch.on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},p=>{const r=p.new;if(r&&r.id){MSGM.set(r.id,r);if(CH&&msgKey(r)===CH.k)markRead(CH.k);checkNotif();uiRefresh();if(pinfo(r.from_user).n==="?")qRefresh()}});
-["group_members","groups","recommendations","friendships"].forEach(t=>ch.on("postgres_changes",{event:"*",schema:"public",table:t},()=>qRefresh()));
+["group_members","groups","recommendations","friendships","ready_status"].forEach(t=>ch.on("postgres_changes",{event:"*",schema:"public",table:t},()=>qRefresh()));
+ch.on("postgres_changes",{event:"DELETE",schema:"public",table:"messages"},p=>{const o=p.old;if(o&&o.id&&MSGM.delete(o.id))uiRefresh()});
 ch.subscribe();RT=ch}catch(e){}}
-if(!POLL){POLL=1;setInterval(()=>{if(U&&PR&&!document.hidden)refreshAll()},25000);document.addEventListener("visibilitychange",()=>{if(!document.hidden&&U&&PR)refreshAll()})}}
+if(!POLL){POLL=1;setInterval(()=>{if(U&&PR&&!document.hidden&&(["ready","msg"].includes(tab)||Date.now()-LASTR>25000))refreshAll()},8000);document.addEventListener("visibilitychange",()=>{if(!document.hidden&&U&&PR)refreshAll()})}}
 /* acciones de grupo */
 async function mkGroup(g){const{data,error}=await sb.from("groups").insert({host:U.id,game_id:g.id,game:sg(g)}).select("id").single();if(error){toast("No se pudo crear el grupo. ¿Ejecutaste supabase-v5.sql?");return null}await loadChat();return data.id}
 async function inviteTo(gid,u){const{error}=await sb.from("group_members").insert({group_id:gid,user_id:u,status:"invited",invited_by:U.id});toast(error?(error.code==="23505"?"Ya está en el grupo o invitado":"No se pudo invitar"):"📨 Invitación enviada");await loadChat();openChat("g:"+gid)}
@@ -530,7 +534,7 @@ if(mine){const n=mine.gid?GM.filter(m=>m.gid===mine.gid&&m.st==="member").length
 h+=`<div class="hero2"><span class="chip">🟢 Estás en línea · ${n} dentro</span><div style="display:flex;gap:12px;align-items:center;margin:10px 0">${cvh(mine.game,"sm")}<div><b>${esc(mine.game.name)}</b><br><small style="color:var(--mu)">${agoM(mine.t)}</small></div></div>${mine.gid?`<button class="btn" data-act="cop" data-k="g:${mine.gid}" style="margin-bottom:8px">💬 Abrir chat del grupo</button>`:""}${pend?`<button class="btn" data-act="tab" data-t="msg" style="background:var(--bg);color:var(--tx);margin-bottom:8px">📨 ${pend} solicitud${pend>1?"es":""} para unirse</button>`:""}<button class="btn" data-act="rstop" style="background:var(--bg);color:var(--tx);margin:0">Cerrar el grupo y dejar de buscar</button></div>`}
 else if(RDY.sel)h+=`<div class="hero2"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">${cvh(RDY.sel,"sm")}<div><b>${esc(RDY.sel.name)}</b><br><small style="color:var(--mu)">${esc(PN(RDY.sel.pl))}</small></div></div><button class="btn" data-act="rgo">🟢 Buscar gente para jugar</button><button class="btn ghost" data-act="rchg" style="margin:0">Cambiar de juego</button></div>`;
 else{RL=quick();h+=`<div class="hero2"><b>¿A qué quieres jugar?</b><input id="rq" placeholder="Buscar un juego…" autocomplete="off" ${inp} style="margin:10px 0 8px;width:100%;padding:13px 14px;border-radius:14px;border:0;background:var(--bg);color:var(--tx);font-size:16px;outline:none"><div id="rr">${RL.length?'<small style="color:var(--mu)">Tus juegos</small>':""}${RL.length?rrows():""}</div></div>`}
-h+=`<h4 class="h4">Amigos listos · ${list.length}</h4>`+(list.length?list.map(f=>`<button class="row" data-act="rview" data-u="${f.u}"><div class="cv sm" style="background:var(--bg);width:46px;height:46px;font-size:26px">${AH(f.a)}</div><div><b>@${esc(f.n)}</b><small class="pg"><i class="live"></i> ¡Jugando a ${esc(f.pl.game.name)}!</small><small>${agoM(f.pl.t)}</small></div><span class="go">${cvh(f.pl.game,"sm")}</span></button>`).join(""):`<div class="empty"><i>🕹️</i>Ningún amigo está buscando partida ahora mismo.</div>`)+`<button class="btn ghost" data-act="rref">↻ Actualizar</button>`+cr;
+h+=`<h4 class="h4">Amigos listos · ${list.length}</h4>`+(list.length?list.map(f=>`<button class="row" data-act="rview" data-u="${f.u}"><div class="cv sm" style="background:var(--bg);width:46px;height:46px;font-size:26px">${AH(f.a)}</div><div><b>@${esc(f.n)}</b><small class="pg"><i class="live"></i> ¡Jugando a ${esc(f.pl.game.name)}!</small><small>${agoM(f.pl.t)}</small></div><span class="go">${cvh(f.pl.game,"sm")}</span></button>`).join(""):`<div class="empty"><i>🕹️</i>Ningún amigo está buscando partida ahora mismo.</div>`)+`<p class="intro" style="text-align:center;margin-top:12px"><i class="live"></i> Se actualiza solo, en directo</p>`+cr;
 v.innerHTML=h;const q=$("rq");if(q)q.oninput=e=>{clearTimeout(sq);const t=e.target.value.trim();if(t.length<2){RL=quick();$("rr").innerHTML=RL.length?rrows():"";return}
 sq=setTimeout(()=>{sget(t).then(r=>{RL=r;$("rr").innerHTML=rrows()}).catch(()=>{})},350)}}
 function readyFriend(v){const f=FR.find(x=>x.u===RFV),pl=f&&f.pl;if(!f||!actv(pl)){RFV=null;readyView(v);return}
@@ -555,7 +559,7 @@ function chatView(v,nv){nv.innerHTML="";const k=CH.k;if(k[0]==="g"&&!GR[k.slice(
 if(CHB!==k){v.innerHTML=`<div class="chh" id="chh"></div><div id="cbn"></div><div class="cm" id="cm"></div><div class="ci"><div><input id="ci" placeholder="Escribe un mensaje…" maxlength="1000" autocomplete="off" enterkeyhint="send"><button data-act="csend">➤</button></div></div>`;CHB=k;CHF=true;$("ci").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();sendMsg()}}}
 chatUpdate()}
 function msgHTML(m,isG){const p=pinfo(m.from_user);if(m.sys)return`<div class="sy">${AH(p.a)} <b>@${esc(p.n)}</b> se ha unido al grupo · <b>¿JUGAMOS?</b> 🎮</div>`;
-const me=m.from_user===U.id;return`<div class="cbw ${me?"me":""}">${!me&&isG?`<small class="cn">@${esc(p.n)}</small>`:""}<div class="cb2">${esc(m.body)}</div><small class="ct">${hm(m.created_at)}</small></div>`}
+const me=m.from_user===U.id;return`<div class="cbw ${me?"me":""}">${!me&&isG?`<small class="cn">@${esc(p.n)}</small>`:""}<div class="cb2"${me?` data-act="mdel" data-id="${m.id}"`:""}>${esc(m.body)}</div><small class="ct">${hm(m.created_at)}</small></div>`}
 function chatUpdate(){if(!CH||!$("cm"))return;const k=CH.k,isG=k[0]==="g",id=k.slice(2),g=isG?GR[id]:null;if(isG&&!g){CH=null;CHB="";render();return}
 const me=isG?GM.find(m=>m.gid===id&&m.u===U.id):null,open=isG?isOpen(g):true,can=isG?!!(me&&(me.st==="member"||me.st==="invited")&&open):FR.some(f=>f.u===id);let head,ban="";
 if(isG){const mem=GM.filter(m=>m.gid===id&&(m.st==="member"||m.st==="invited")).sort((a,b)=>(b.u===g.host)-(a.u===g.host)),
@@ -621,9 +625,9 @@ else if(a==="rback"){RFV=null;render()}
 else if(a==="rsel"){RDY.sel=RL[+d.i];render()}
 else if(a==="rchg"){RDY.sel=null;render()}
 else if(a==="rgo"){const g=RDY.sel;if(!g)return;const gid=await mkGroup(g);if(!gid)return;const pl={game:sg(g),t:new Date().toISOString(),gid};
-const{error}=await sb.from("shared_data").update({playing:pl}).eq("user_id",U.id);if(error){toast("No se pudo publicar. ¿Ejecutaste supabase-v3.sql?");return}
+const{error}=await sb.from("ready_status").upsert({user_id:U.id,playing:pl,updated_at:new Date().toISOString()});if(error){toast("No se pudo publicar. ¿Ejecutaste supabase-v6.sql?");return}
 MYPL=pl;RDY.sel=null;toast("🟢 ¡Listo! Tu grupo está abierto");render()}
-else if(a==="rstop"){if(MYPL&&MYPL.gid)await sb.from("groups").update({closed:true}).eq("id",MYPL.gid);await sb.from("shared_data").update({playing:null}).eq("user_id",U.id);MYPL=null;toast("Grupo cerrado");await loadChat();render()}
+else if(a==="rstop"){if(MYPL&&MYPL.gid)await sb.from("groups").update({closed:true}).eq("id",MYPL.gid);await sb.from("ready_status").delete().eq("user_id",U.id);MYPL=null;toast("Grupo cerrado");await loadChat();render()}
 else if(a==="rref"){await refreshAll();toast("Actualizado");render()}
 else if(a==="ropen"){FV=d.u;fseg="pl";tab="fr";CH=null;CHB="";render()}
 else if(a==="rjoin"){const f=FR.find(x=>x.u===d.u);if(f)joinReq(f)}
@@ -641,7 +645,9 @@ else if(a==="crej"){await sb.from("group_members").delete().eq("group_id",d.g).e
 else if(a==="rqacc"){await sb.from("group_members").update({status:"member"}).eq("group_id",d.g).eq("user_id",d.u);toast("✅ Aceptado");await loadChat();render()}
 else if(a==="rqrej"||a==="rqdel"){await sb.from("group_members").delete().eq("group_id",d.g).eq("user_id",a==="rqrej"?d.u:U.id);await loadChat();render()}
 else if(a==="cleave"){await sb.from("group_members").delete().eq("group_id",CH.k.slice(2)).eq("user_id",U.id);CH=null;CHB="";await loadChat();render()}
-else if(a==="cclose"){const gid=CH.k.slice(2);await sb.from("groups").update({closed:true}).eq("id",gid);if(MYPL&&MYPL.gid===gid){await sb.from("shared_data").update({playing:null}).eq("user_id",U.id);MYPL=null}await loadChat();toast("Grupo cerrado");render()}
+else if(a==="cclose"){const gid=CH.k.slice(2);await sb.from("groups").update({closed:true}).eq("id",gid);if(MYPL&&MYPL.gid===gid){await sb.from("ready_status").delete().eq("user_id",U.id);MYPL=null}await loadChat();toast("Grupo cerrado");render()}
+else if(a==="mdel"){MDEL=+d.id;$("shb").innerHTML=`<h3>¿Eliminar este mensaje?</h3><p class="intro" style="text-align:center">Se borrará para todos los del chat.</p><button class="btn" data-act="mdelgo" style="background:#7f1d1d;color:#fff">Eliminar</button><button class="btn" data-act="close">Cancelar</button>`;$("sh").classList.add("on")}
+else if(a==="mdelgo"){closeS();const id=MDEL,r=await sb.from("messages").delete().eq("id",id).select("id");if(r.error||!(r.data&&r.data.length)){toast("No se pudo eliminar");return}MSGM.delete(id);toast("Mensaje eliminado");if(CH)chatUpdate();else render()}
 else if(a==="notif"){try{await Notification.requestPermission()}catch(e){}render()}
 else if(a==="lf"){LF=d.k;render()}
 else if(a==="mclose"){const o=$("mt");o.classList.remove("on");o.innerHTML=""}
