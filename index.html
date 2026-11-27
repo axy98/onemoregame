@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#e60012">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#e60012"><meta name="mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png">
 <title>One More Game</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1/dist/umd/supabase.js"></script>
 <style>
@@ -410,7 +410,7 @@ const cons=(f.c||[]).map(k=>C.find(x=>x.k===k)).filter(Boolean).map(c=>`<span cl
 const L=listOf(f,fseg).map((g,i)=>[g,i]);
 v.innerHTML=`<button class="btn ghost" data-act="fback" style="text-align:left;margin:0">‹ Amigos</button><div class="dt">Perfil</div><h1>${AH(f.a)} @${esc(f.n)}</h1>${playLine(f)}<div class="cons">${cons||"<small style='color:var(--mu)'>Aún no ha indicado sus consolas</small>"}</div><p class="intro">${f.d.length+f.o.length} juegos · ${f.d.length} pasados</p><button class="btn" data-act="fdm" data-u="${f.u}">💬 Enviar mensaje</button><button class="btn" data-act="pinv" data-u="${f.u}" style="background:var(--bg);color:var(--tx)">🎮 Invitar a jugar</button><button class="btn" data-act="rcsel" data-u="${f.u}">📨 Enviar recomendación</button><div class="seg2"><button class="${fseg==="pl"?"on":""}" data-act="fseg" data-v="pl">Tiene ${f.d.length+f.o.length}</button><button class="${fseg==="d"?"on":""}" data-act="fseg" data-v="d">Pasados ${f.d.length}</button></div>`+(L.length?groupRows(L,(g,i)=>frow(g,i)):`<div class="empty">Nada por aquí.</div>`)+`<button class="btn ghost" data-act="fdel" data-u="${f.u}">Eliminar amigo</button>`+cr}
 function meExtra(){const ch=PR&&PR.username_changed_at?new Date(PR.username_changed_at):null,nx=ch?new Date(ch.getTime()+30*864e5):null,wait=nx&&nx>new Date();
-return`<h4 class="h4">Foto de perfil</h4>${avPick(P.av,"setav")}<button class="btn" data-act="avgame" style="margin-top:8px">🖼️ Usar la portada de un juego</button><h4 class="h4">Nombre de usuario</h4><p class="intro">@${esc(P.name)} · ${wait?"Podrás cambiarlo el "+nx.toLocaleDateString("es-ES"):"Solo se puede cambiar una vez cada 30 días."}</p>${wait?"":`<p class="err" id="err"></p><input id="nu" placeholder="Nuevo nombre de usuario" maxlength="20" autocapitalize="off" ${inp}><button class="btn" data-act="setun">Cambiar nombre</button>`}<h4 class="h4">Zona peligrosa</h4><button class="btn" data-act="delacc" style="background:#7f1d1d">Borrar mi cuenta</button>`}
+return`<h4 class="h4">Foto de perfil</h4>${avPick(P.av,"setav")}<button class="btn" data-act="avgame" style="margin-top:8px">🖼️ Usar la portada de un juego</button><h4 class="h4">Nombre de usuario</h4><p class="intro">@${esc(P.name)} · ${wait?"Podrás cambiarlo el "+nx.toLocaleDateString("es-ES"):"Solo se puede cambiar una vez cada 30 días."}</p>${wait?"":`<p class="err" id="err"></p><input id="nu" placeholder="Nuevo nombre de usuario" maxlength="20" autocapitalize="off" ${inp}><button class="btn" data-act="setun">Cambiar nombre</button>`}<h4 class="h4">Notificaciones</h4>${pushBtn()}<h4 class="h4">Zona peligrosa</h4><button class="btn" data-act="delacc" style="background:#7f1d1d">Borrar mi cuenta</button>`}
 function loginHero(){const rot=[-8,6,-4,7,-6,5];return`<div class="lh"><span class="st s1">✦</span><span class="st s2">✧</span><span class="st s3">✦</span><div class="lg">${["ps2","switch","gba","psp","x360","ds"].map((k,i)=>`<svg viewBox="0 0 100 70" style="transform:rotate(${rot[i]}deg)">${C.find(c=>c.k===k).s}</svg>`).join("")}</div><div class="lt">PRESS START</div></div>`}
 /* avatares: pixel art original, perfiles con imagen de juego */
 const PX=[
@@ -492,6 +492,34 @@ if(need.length){const pr=await sb.from("profiles").select("id,username,avatar").
 /* avisos */
 function notifKeys(){const m=new Map();inbox().forEach(i=>{if(i.t==="req")m.set(i.k,{t:"Petición para jugar",b:"@"+pinfo(i.m.u).n+" quiere unirse a jugar a "+i.g.g.name});else if(i.t==="inv")m.set(i.k,{t:"Invitación a jugar",b:"@"+pinfo(i.m.by).n+" te invita a jugar a "+i.g.g.name});else m.set(i.k,{t:"Recomendación",b:"@"+i.r.p.username+" te recomienda "+i.r.g.name})});
 allM().forEach(x=>{if(!x.sys&&x.from_user!==U.id&&Date.parse(x.created_at)>lrOf(msgKey(x)))m.set("m"+x.id,{t:"@"+pinfo(x.from_user).n,b:x.body.slice(0,80)})});return m}
+const VAPID="BHbOueHcTr3_9cDMi0yvbAeyzBAebv6i6xrKXOs6gPaU_A9p965zvY1qvwSfxnKFndsOPZJzz7F4NP9BQ2oezWc";
+let PUSHST="off",PUSHU=null;
+const u8=x=>{const b=atob((x+"=".repeat((4-x.length%4)%4)).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+const IOSD=/iphone|ipad|ipod/i.test(navigator.userAgent),STAND=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
+const pushOK=()=>"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+async function pushSync(ask){
+if(!pushOK()){PUSHST=IOSD&&!STAND?"ios":"nosup";return}
+if(Notification.permission==="denied"){PUSHST="denied";return}
+if(Notification.permission!=="granted"&&!ask){PUSHST="off";return}
+try{if(Notification.permission!=="granted"){const r=await Notification.requestPermission();if(r!=="granted"){PUSHST=r==="denied"?"denied":"off";return}}
+const reg=await navigator.serviceWorker.register("sw.js");await navigator.serviceWorker.ready;
+let sub=await reg.pushManager.getSubscription();
+if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID)});
+const j=sub.toJSON();
+if(sb&&U){const{error}=await sb.from("push_subs").upsert({user_id:U.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth});if(error){PUSHST="err";return}}
+PUSHST="on"}catch(e){PUSHST="err"}}
+async function pushDrop(un){try{if(!pushOK())return;const reg=await navigator.serviceWorker.getRegistration();const sub=reg&&await reg.pushManager.getSubscription();
+if(sub){if(sb&&U)await sb.from("push_subs").delete().eq("user_id",U.id).eq("endpoint",sub.endpoint);if(un)await sub.unsubscribe()}}catch(e){}}
+const pushBtn=()=>{const m={
+on:`<p class="intro"><i class="live"></i> Notificaciones activadas en este móvil. Te llegan aunque la app esté cerrada.</p><button class="btn" data-act="pushoff" style="background:var(--bg);color:var(--tx)">Desactivar notificaciones</button>`,
+off:`<button class="btn" data-act="pushon" style="background:var(--bg);color:var(--tx)">🔔 Activar notificaciones (app cerrada)</button>`,
+err:`<p class="intro">No se pudieron activar. Comprueba que ejecutaste supabase-v7.sql.</p><button class="btn" data-act="pushon" style="background:var(--bg);color:var(--tx)">🔔 Reintentar</button>`,
+denied:`<p class="intro">🔕 Las notificaciones están bloqueadas. Actívalas en los ajustes del navegador para este sitio.</p>`,
+ios:`<p class="intro">🔔 En iPhone: ábrela en Safari → Compartir → <b>Añadir a pantalla de inicio</b> y abre la app desde ese icono. Entonces podrás activar las notificaciones.</p>`,
+nosup:`<p class="intro">Este navegador no admite notificaciones con la app cerrada.</p>`};return m[PUSHST]||""};
+if("serviceWorker" in navigator){try{navigator.serviceWorker.addEventListener("message",e=>{const t=e.data&&e.data.omgTab;if(t&&["msg","fr","ready","hoy"].includes(t)){CH=null;tab=t;render()}})}catch(e){}
+if(location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+if(/^#(msg|fr|ready)$/.test(location.hash)){const h=location.hash.slice(1);addEventListener("load",()=>setTimeout(()=>{if(typeof U!=="undefined"&&U){tab=h;render()}},1500))}}
 function notify(t,b){toast("🔔 "+t);if(window.Notification&&Notification.permission==="granted"&&document.hidden){try{new Notification(t,{body:b})}catch(e){}}}
 function checkNotif(){const cur=notifKeys();if(NS===null){NS=new Set(cur.keys());return}cur.forEach((v,k)=>{if(!NS.has(k)){NS.add(k);notify(v.t,v.b)}})}
 async function refreshAll(){if(!U||!PR||RFB)return;RFB=true;LASTR=Date.now();try{await loadFriends(true);await loadChat();if(CH)markRead(CH.k);checkNotif();uiRefresh()}catch(e){}finally{RFB=false}}
@@ -499,7 +527,7 @@ const qRefresh=()=>{clearTimeout(qT);qT=setTimeout(refreshAll,350)};
 function uiRefresh(){if(!U||!PR)return;if(tab==="msg"&&CH){chatUpdate();addBadges();return}
 const ae=document.activeElement,typing=ae&&["rq","gq","fq","avq","n","kk","em","pw","un","np","nu","dc","fl","ci"].includes(ae.id);
 if(["msg","ready","fr","reto"].includes(tab)&&!typing&&!$("sh").classList.contains("on")&&!$("dv").classList.contains("on"))render();else addBadges()}
-function startRT(){if(!sb||!U)return;if(!RT){try{const ch=sb.channel("omg-"+U.id);
+function startRT(){if(!sb||!U)return;if(PUSHU!==U.id){PUSHU=U.id;pushSync(false)}if(!RT){try{const ch=sb.channel("omg-"+U.id);
 ch.on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},p=>{const r=p.new;if(r&&r.id){MSGM.set(r.id,r);if(CH&&msgKey(r)===CH.k)markRead(CH.k);checkNotif();uiRefresh();if(pinfo(r.from_user).n==="?")qRefresh()}});
 ["group_members","groups","recommendations","friendships","ready_status"].forEach(t=>ch.on("postgres_changes",{event:"*",schema:"public",table:t},()=>qRefresh()));
 ch.on("postgres_changes",{event:"DELETE",schema:"public",table:"messages"},p=>{const o=p.old;if(o&&o.id&&MSGM.delete(o.id))uiRefresh()});
@@ -551,7 +579,7 @@ return`<button class="row" data-act="cop" data-k="${c.k}">${cvh(g.g,"sm")}<div><
 const p=pinfo(c.o);return`<button class="row" data-act="cop" data-k="${c.k}">${av46(p.a)}<div><b>@${esc(p.n)}</b><small>${pv}</small></div><span class="go">${ub||tm}</span></button>`};
 function msgView(v,nv){if(CH){chatView(v,nv);return}CHB="";const inb=inbox(),outs=outReq(),cl=chatList();
 let h=`<h1>Mensajes</h1><p class="intro">Aquí llegan las solicitudes para jugar, las invitaciones y las recomendaciones. También están tus chats.</p>`;
-if(window.Notification&&Notification.permission==="default")h+=`<button class="btn" data-act="notif" style="background:var(--bg);color:var(--tx)">🔔 Activar avisos del navegador</button>`;
+h+=pushBtn();
 if(inb.length||outs.length){h+=`<h4 class="h4">Solicitudes · ${inb.length}</h4>`+inb.map(inbRow).join("")+outs.map(m=>{const g=GR[m.gid],p=pinfo(g.host);return`<div class="row">${cvh(g.g,"sm")}<div><b>${esc(g.g.name)}</b><small>Pendiente · petición a @${esc(p.n)}</small></div><span class="go"><button class="mini2 gr" data-act="rqdel" data-g="${m.gid}">Cancelar</button></span></div>`}).join("")}
 h+=`<h4 class="h4">Chats</h4><button class="btn" data-act="dmnew" style="background:var(--bg);color:var(--tx)">✏️ Nuevo mensaje</button>`+(cl.length?cl.map(chatRow).join(""):`<div class="empty"><i>💬</i>Todavía no tienes chats.<br>Escribe a un amigo o únete a una partida.</div>`)+cr;
 v.innerHTML=h;addBadges()}
@@ -617,7 +645,7 @@ else if(a==="yr"){ctx.g.y=+d.y;closeS();render()}
 else if(a==="goal")setGoal(+d.v);else if(a==="goalc")setGoal(+$("gi").value);else if(a==="goalr"){P.goals=P.goals||{};delete P.goals[YR()];render()}
 else if(a==="am"){AM=d.m;render()}
 else if(a==="login")doLogin();else if(a==="reg")doReg();else if(a==="forgot")doForgot();else if(a==="newpw")doNewPw();
-else if(a==="logout"){await push();await sb.auth.signOut();wipeLocal();AM="login"}
+else if(a==="logout"){await push();await pushDrop(false);await sb.auth.signOut();wipeLocal();AM="login"}
 else if(a==="freq"){const{error}=await sb.from("friendships").insert({requester:U.id,addressee:d.id});toast(error?"No se pudo enviar":"Solicitud enviada");await loadFriends();render()}
 else if(a==="facc"){await sb.from("friendships").update({status:"accepted"}).eq("id",+d.id);toast("Amigo añadido");await loadFriends();render()}
 else if(a==="frej"){await sb.from("friendships").delete().eq("id",+d.id);await loadFriends();render()}
@@ -650,7 +678,8 @@ else if(a==="cleave"){await sb.from("group_members").delete().eq("group_id",CH.k
 else if(a==="cclose"){const gid=CH.k.slice(2);await sb.from("groups").update({closed:true}).eq("id",gid);if(MYPL&&MYPL.gid===gid){await sb.from("ready_status").delete().eq("user_id",U.id);MYPL=null}await loadChat();toast("Grupo cerrado");render()}
 else if(a==="mdel"){MDEL=+d.id;$("shb").innerHTML=`<h3>¿Eliminar este mensaje?</h3><p class="intro" style="text-align:center">Se borrará para todos los del chat.</p><button class="btn" data-act="mdelgo" style="background:#7f1d1d;color:#fff">Eliminar</button><button class="btn" data-act="close">Cancelar</button>`;$("sh").classList.add("on")}
 else if(a==="mdelgo"){closeS();const id=MDEL,r=await sb.from("messages").delete().eq("id",id).select("id");if(r.error||!(r.data&&r.data.length)){toast("No se pudo eliminar");return}MSGM.delete(id);toast("Mensaje eliminado");if(CH)chatUpdate();else render()}
-else if(a==="notif"){try{await Notification.requestPermission()}catch(e){}render()}
+else if(a==="pushon"){await pushSync(true);render()}
+else if(a==="pushoff"){await pushDrop(true);PUSHST="off";render()}
 else if(a==="lf"){LF=d.k;render()}
 else if(a==="mclose"){const o=$("mt");o.classList.remove("on");o.innerHTML=""}
 else if(a==="mprof"){const o=$("mt");o.classList.remove("on");o.innerHTML="";FV=d.u;fseg="pl";tab="fr";render()}
