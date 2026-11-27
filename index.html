@@ -443,7 +443,7 @@ $("avq").oninput=e=>{clearTimeout(sq);const q=e.target.value.trim();if(q.length<
 sq=setTimeout(()=>{sget(q).then(r=>{AVL=r;$("avl").innerHTML=avRows()}).catch(()=>{})},350)}}
 /* PLAYER READY, grupos de juego y mensajes */
 const RDYH=3;let RDY={sel:null},RL=[],MYPL=null,RFV=null,GSCB=null,FSCB=null,GL=[];
-let GR={},GM=[],MSGM=new Map(),LASTF=0,LASTFULL=0,LASTR=0,MDEL=0,CH=null,CHB="",RT=null,POLL=0,NS=null,PRM={},RFB=false,CHF=false,qT=null;
+let CDK="",LPT=0,LPX=null,GR={},GM=[],MSGM=new Map(),LASTF=0,LASTFULL=0,LASTR=0,MDEL=0,CH=null,CHB="",RT=null,POLL=0,NS=null,PRM={},RFB=false,CHF=false,qT=null;
 P.lr0=P.lr0||Date.now();
 const actv=p=>!!(p&&p.t&&p.game&&Date.parse(p.t)+RDYH*36e5>Date.now());
 const agoM=t=>{const m=Math.max(1,Math.round((Date.now()-Date.parse(t))/6e4));return m<60?"hace "+m+" min":"hace "+Math.floor(m/60)+" h"};
@@ -458,7 +458,8 @@ const isOpen=g=>!!(g&&!g.closed&&Date.parse(g.exp)>Date.now());
 function pinfo(id){if(U&&id===U.id)return{n:P.name,a:P.av};const f=FR.find(x=>x.u===id);if(f)return{n:f.n,a:f.a};const q=FQ.find(x=>x.o===id);if(q)return{n:q.p.username,a:q.p.avatar};const p=PRM[id];return p?{n:p.username,a:p.avatar}:{n:"?",a:"😎"}}
 /* mensajes: datos */
 const msgKey=m=>m.group_id?"g:"+m.group_id:"d:"+(m.from_user===U.id?m.to_user:m.from_user);
-const allM=()=>[...MSGM.values()].sort((a,b)=>a.id-b.id);
+const clrOf=k=>(P.clr&&P.clr[k])||0;
+const allM=()=>[...MSGM.values()].filter(m=>!(P.clr&&Date.parse(m.created_at)<=clrOf(msgKey(m)))).sort((a,b)=>a.id-b.id);
 const chatMsgs=k=>allM().filter(m=>msgKey(m)===k);
 const lrOf=k=>(P.lr&&P.lr[k])||P.lr0;
 function markRead(k){const ms=chatMsgs(k),l=ms[ms.length-1];P.lr=P.lr||{};P.lr[k]=l?Math.max(Date.parse(l.created_at),P.lr0):Date.now();saveP()}
@@ -470,8 +471,8 @@ RC.forEach(r=>it.push({k:"r"+r.id,t:"rec",r}));return it}
 const outReq=()=>GM.filter(m=>m.u===U.id&&m.st==="requested"&&GR[m.gid]&&isOpen(GR[m.gid]));
 function chatList(){const ks=new Map();
 GM.filter(m=>m.u===U.id&&(m.st==="member"||m.st==="invited")&&GR[m.gid]).forEach(m=>ks.set("g:"+m.gid,{k:"g:"+m.gid,g:GR[m.gid]}));
-MSGM.forEach(m=>{if(!m.group_id){const o=m.from_user===U.id?m.to_user:m.from_user;ks.set("d:"+o,{k:"d:"+o,o})}});
-return[...ks.values()].map(c=>{const ms=chatMsgs(c.k),l=ms[ms.length-1];c.last=l;c.ts=l?Date.parse(l.created_at):(c.g?Date.parse(c.g.t):0);return c}).sort((a,b)=>b.ts-a.ts)}
+allM().forEach(m=>{if(!m.group_id){const o=m.from_user===U.id?m.to_user:m.from_user;ks.set("d:"+o,{k:"d:"+o,o})}});
+return[...ks.values()].map(c=>{const ms=chatMsgs(c.k),l=ms[ms.length-1];c.last=l;c.ts=l?Date.parse(l.created_at):(c.g?Date.parse(c.g.t):0);return c}).filter(c=>{if(!clrOf(c.k)||c.last)return true;const me=c.g&&GM.find(m=>m.gid===c.g.id&&m.u===U.id);return !!(me&&me.st==="invited")}).sort((a,b)=>b.ts-a.ts)}
 const msgCount=()=>inbox().length+chatList().reduce((n,c)=>n+unreadOf(c.k),0);
 function addBadges(){const nv=$("nav");if(!nv)return;nv.querySelectorAll("em").forEach(e=>e.remove());
 const add=(t,n)=>{if(!n)return;const b=nv.querySelector(`button[data-t="${t}"]`);if(b)b.insertAdjacentHTML("beforeend",`<em>${n>99?"99+":n}</em>`)};
@@ -588,15 +589,20 @@ if(CHB!==k){v.innerHTML=`<div class="chh" id="chh"></div><div id="cbn"></div><di
 chatUpdate()}
 function msgHTML(m,isG){const p=pinfo(m.from_user);if(m.sys)return`<div class="sy">${AH(p.a)} <b>@${esc(p.n)}</b> se ha unido al grupo · <b>¿JUGAMOS?</b> 🎮</div>`;
 const me=m.from_user===U.id;return`<div class="cbw ${me?"me":""}">${!me&&isG?`<small class="cn">@${esc(p.n)}</small>`:""}<div class="cb2"${me?` data-act="mdel" data-id="${m.id}"`:""}>${esc(m.body)}</div><small class="ct">${hm(m.created_at)}</small></div>`}
+(function(){const sel=e=>{const r=e.target.closest&&e.target.closest('.row[data-act="cop"]');return r&&r.dataset.k};
+document.addEventListener("touchstart",e=>{const k=sel(e);if(!k)return;clearTimeout(LPX);LPX=setTimeout(()=>{LPT=Date.now();const b=document.querySelector('.row[data-act="cop"][data-k="'+k+'"]');if(b)b.click&&0;document.querySelector("body").dispatchEvent(new CustomEvent("omg-lp",{detail:k}))},550)},{passive:true});
+["touchend","touchmove","touchcancel"].forEach(t=>document.addEventListener(t,()=>clearTimeout(LPX),{passive:true}));
+document.addEventListener("contextmenu",e=>{const k=sel(e);if(k){e.preventDefault();LPT=Date.now();document.body.dispatchEvent(new CustomEvent("omg-lp",{detail:k}))}});
+document.body.addEventListener("omg-lp",e=>{CDK=e.detail;const g=CDK[0]==="g";$("shb").innerHTML=`<h3>¿Eliminar este chat?</h3><p class="intro" style="text-align:center">Desaparece solo para ti${g?" (el grupo no se cierra)":""}. Si te escriben de nuevo, volverá a aparecer solo con los mensajes nuevos.</p><button class="btn" data-act="cdelgo" style="background:#7f1d1d;color:#fff">Eliminar chat</button><button class="btn" data-act="close">Cancelar</button>`;$("sh").classList.add("on")})})();
 function chatUpdate(){if(!CH||!$("cm"))return;const k=CH.k,isG=k[0]==="g",id=k.slice(2),g=isG?GR[id]:null;if(isG&&!g){CH=null;CHB="";render();return}
 const me=isG?GM.find(m=>m.gid===id&&m.u===U.id):null,open=isG?isOpen(g):true,can=isG?!!(me&&(me.st==="member"||me.st==="invited")&&open):FR.some(f=>f.u===id);let head,ban="";
 if(isG){const mem=GM.filter(m=>m.gid===id&&(m.st==="member"||m.st==="invited")).sort((a,b)=>(b.u===g.host)-(a.u===g.host)),
 chips=mem.map(m=>{const p=pinfo(m.u);return`<span class="chip">${m.u===g.host?"👑 ":""}${AH(p.a)} ${esc(p.n)}${m.st==="invited"?" · invitado":""}</span>`}).join(""),
-acts=(me&&me.st==="member"&&open?`<button class="mini2" data-act="minv">➕ Invitar</button> `:"")+(g.host===U.id&&open?`<button class="mini2 gr" data-act="cclose">Cerrar grupo</button>`:(me&&open?`<button class="mini2 gr" data-act="cleave">Salir</button>`:""));
+acts=(me&&me.st==="member"&&open?`<button class="mini2" data-act="minv">➕ Invitar</button> `:"")+(g.host===U.id&&open?`<button class="mini2 gr" data-act="cclose">Cerrar grupo</button>`:(me&&open?`<button class="mini2 gr" data-act="cleave">Salir</button>`:""))+` <button class="mini2 gr" data-act="cdel" data-k="${k}">🗑 Eliminar chat</button>`;
 head=`<div class="chh-t"><button class="mini2 gr" data-act="cback">‹</button>${cvh(g.g,"sm")}<div style="min-width:0"><b>Grupo · ${esc(g.g.name)}</b><small style="display:block;color:var(--mu)">${esc(PN(g.g.pl))}${open?"":" · cerrado"}</small></div></div><div class="chips2">${chips}</div><div class="acts2">${acts}</div>`;
 if(me&&me.st==="invited"&&open){const p=pinfo(me.by);ban=`<div class="hero2" style="margin:8px 0"><b>@${esc(p.n)} te ha invitado a jugar</b><div class="r2" style="margin-top:8px"><button class="btn" data-act="cacc" data-g="${id}" style="margin:0">¡Unirme!</button><button class="btn" data-act="crej" data-g="${id}" style="margin:0;background:var(--bg);color:var(--tx)">Rechazar</button></div></div>`}
 else if(!open)ban=`<p class="intro" style="margin:8px 0">Este grupo está cerrado.</p>`}
-else{const p=pinfo(id);head=`<div class="chh-t"><button class="mini2 gr" data-act="cback">‹</button>${av46(p.a)}<div style="flex:1"><b>@${esc(p.n)}</b></div><button class="mini2 gr" data-act="ropen" data-u="${id}">Perfil</button></div>`;if(!can)ban=`<p class="intro" style="margin:8px 0">Ya no sois amigos: no puedes escribirle.</p>`}
+else{const p=pinfo(id);head=`<div class="chh-t"><button class="mini2 gr" data-act="cback">‹</button>${av46(p.a)}<div style="flex:1"><b>@${esc(p.n)}</b></div><button class="mini2 gr" data-act="ropen" data-u="${id}">Perfil</button><button class="mini2 gr" data-act="cdel" data-k="${k}" aria-label="Eliminar chat">🗑</button></div>`;if(!can)ban=`<p class="intro" style="margin:8px 0">Ya no sois amigos: no puedes escribirle.</p>`}
 const ms=chatMsgs(k),stick=CHF||(innerHeight+scrollY>=document.body.scrollHeight-160);
 $("chh").innerHTML=head;$("cbn").innerHTML=ban;$("cm").innerHTML=ms.length?ms.map(m=>msgHTML(m,isG)).join(""):`<div class="empty">Aún no hay mensajes.<br>¡Escribe el primero!</div>`;
 const ci=$("ci");ci.disabled=!can;ci.placeholder=can?"Escribe un mensaje…":"No puedes escribir aquí";markRead(k);
@@ -665,7 +671,9 @@ else if(a==="pinv")inviteFlow(d.u);
 else if(a==="fdm")openChat("d:"+d.u);
 else if(a==="gpick"){const g=GL[+d.i];closeS();if(g&&GSCB)GSCB(g)}
 else if(a==="fpick"){closeS();if(FSCB)FSCB(d.u)}
-else if(a==="cop")openChat(d.k);
+else if(a==="cop"){if(Date.now()-LPT<700)return;openChat(d.k)}
+else if(a==="cdel"){CDK=d.k;const g=CDK[0]==="g";$("shb").innerHTML=`<h3>¿Eliminar este chat?</h3><p class="intro" style="text-align:center">Desaparece solo para ti${g?" (el grupo no se cierra)":""}. Si te escriben de nuevo, volverá a aparecer solo con los mensajes nuevos.</p><button class="btn" data-act="cdelgo" style="background:#7f1d1d;color:#fff">Eliminar chat</button><button class="btn" data-act="close">Cancelar</button>`;$("sh").classList.add("on")}
+else if(a==="cdelgo"){closeS();const k=CDK,ms=chatMsgs(k),l=ms[ms.length-1];P.clr=P.clr||{};P.clr[k]=l?Date.parse(l.created_at):Date.now();saveP();if(CH&&CH.k===k){CH=null;CHB=""}toast("Chat eliminado");render();scrollTo(0,0)}
 else if(a==="cback"){CH=null;CHB="";render();scrollTo(0,0)}
 else if(a==="csend")sendMsg();
 else if(a==="dmnew")frSheet("Nuevo mensaje",FR,u=>openChat("d:"+u));
